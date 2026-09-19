@@ -80,6 +80,9 @@ jobs:
           package = os.environ["PACKAGE_NAME"].strip().lower()
           version = os.environ["VERSION_NAME"].strip() or "1.0.0"
           color = os.environ["PRIMARY_COLOR"].strip() or "#4F46E5"
+          version_parts = re.findall(r"\d+", version)
+          version_code = int(version_parts[0]) * 10000 + (int(version_parts[1]) if len(version_parts) > 1 else 0) * 100 + (int(version_parts[2]) if len(version_parts) > 2 else 0)
+          version_code = max(1, min(2100000000, version_code))
           camera = os.environ["CAMERA"].lower() == "true"
           location = os.environ["LOCATION"].lower() == "true"
 
@@ -110,6 +113,7 @@ jobs:
           g = re.sub(r'namespace\s+"[^"]+"', f'namespace "{package}"', g, count=1)
           g = re.sub(r'applicationId\s+"[^"]+"', f'applicationId "{package}"', g, count=1)
           g = re.sub(r'versionName\s+"[^"]+"', f'versionName "{version}"', g, count=1)
+          g = re.sub(r'versionCode\s+\d+', f'versionCode {version_code}', g, count=1)
           gradle.write_text(g)
 
           (root / "app/src/main/res/values/strings.xml").write_text(
@@ -145,7 +149,7 @@ jobs:
           m = m[:insert_at] + "\n".join(permissions) + "\n\n" + m[insert_at:]
           manifest.write_text(m)
 
-          print(f"Configured {name} | {package} | {version} | {url}")
+          print(f"Configured {name} | {package} | {version} | versionCode={version_code} | {url}")
           PY
 
       - name: Set up JDK 17
@@ -226,11 +230,39 @@ jobs:
           jarsigner -verify -verbose -certs app/build/outputs/bundle/release/*.aab > /tmp/aab-signature.txt
           tail -n 20 /tmp/aab-signature.txt
 
+      - name: Generate release checksums and build manifest
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          APP_URL: ${{ inputs.app_url }}
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          VERSION_NAME: ${{ inputs.version_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p app/build/release-info
+          sha256sum app/build/outputs/apk/release/*.apk > app/build/release-info/SHA256SUMS.txt
+          sha256sum app/build/outputs/bundle/release/*.aab >> app/build/release-info/SHA256SUMS.txt
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path("app/build/release-info/build-info.json")
+          p.write_text(json.dumps({
+              "appName": os.environ["APP_NAME"],
+              "appUrl": os.environ["APP_URL"],
+              "packageName": os.environ["PACKAGE_NAME"].lower(),
+              "versionName": os.environ["VERSION_NAME"],
+              "artifacts": ["debug-apk", "signed-release-apk", "signed-release-aab"],
+              "signingVerified": True
+          }, indent=2) + "\n")
+          PY
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
         with:
           name: web2app-${{ inputs.app_name }}-debug-apk
-          path: android-project/app/build/outputs/apk/debug/*.apk
+          path: |
+            android-project/app/build/outputs/apk/debug/*.apk
+            android-project/app/build/release-info/build-info.json
+            android-project/app/build/release-info/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 7
 
@@ -238,7 +270,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: web2app-${{ inputs.app_name }}-signed-release-apk
-          path: android-project/app/build/outputs/apk/release/*.apk
+          path: |
+            android-project/app/build/outputs/apk/release/*.apk
+            android-project/app/build/release-info/SHA256SUMS.txt
+            android-project/app/build/release-info/build-info.json
           if-no-files-found: error
           retention-days: 7
 
@@ -246,7 +281,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: web2app-${{ inputs.app_name }}-signed-release-aab
-          path: android-project/app/build/outputs/bundle/release/*.aab
+          path: |
+            android-project/app/build/outputs/bundle/release/*.aab
+            android-project/app/build/release-info/SHA256SUMS.txt
+            android-project/app/build/release-info/build-info.json
           if-no-files-found: error
           retention-days: 7
 
