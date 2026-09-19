@@ -767,3 +767,261 @@ html[data-theme="dark"] .site-header .mobile-nav-link.active {
   border-color: rgba(129,140,248,.28) !important;
 }
 html[data-theme="dark"] .site-header .text-white { color: #f8fafc !important; }
+
+
+/* ===== Site-wide visual language =====
+   All pages/components inherit the same tokens, spacing, surfaces,
+   controls and light/dark behavior. Page-specific Tailwind utilities
+   are intentionally normalized here so visual consistency does not
+   depend on the CDN runtime. */
+main {
+  color: var(--app-text);
+}
+
+main > section,
+main > article {
+  color: var(--app-text);
+}
+
+.site-footer {
+  margin-top: auto;
+  background: color-mix(in srgb, var(--app-surface) 94%, transparent);
+  border-color: var(--app-border) !important;
+  color: var(--app-text-2);
+}
+
+.site-footer .text-white,
+.site-footer .text-gray-100 {
+  color: var(--app-text) !important;
+}
+
+.site-footer .text-gray-400,
+.site-footer .text-gray-500,
+.site-footer .text-gray-600 {
+  color: var(--app-muted) !important;
+}
+
+.site-footer a {
+  color: var(--app-muted) !important;
+  transition: color .18s ease, background-color .18s ease;
+}
+
+.site-footer a:hover {
+  color: var(--app-brand) !important;
+}
+
+.site-footer [data-current-year] {
+  color: inherit;
+}
+
+/* Page headings and body copy */
+main h1, main h2, main h3, main h4, main h5, main h6 {
+  color: var(--app-text);
+}
+
+main p,
+main li,
+main dd,
+main dt {
+  color: var(--app-text-2);
+}
+
+main .text-gray-300,
+main .text-gray-400,
+main .text-gray-500,
+main .text-gray-600 {
+  color: var(--app-muted) !important;
+}
+
+main .text-white,
+main .text-gray-100 {
+  color: var(--app-text) !important;
+}
+
+main .text-brand-300,
+main .text-brand-400 {
+  color: #6366f1 !important;
+}
+
+main .text-emerald-300,
+main .text-emerald-400 {
+  color: #059669 !important;
+}
+
+html[data-theme="dark"] main .text-brand-300,
+html[data-theme="dark"] main .text-brand-400 {
+  color: #a5b4fc !important;
+}
+
+html[data-theme="dark"] main .text-emerald-300,
+html[data-theme="dark"] main .text-emerald-400 {
+  color: #6ee7b7 !important;
+}
+
+/* Common content surfaces */
+main .bg-white,
+main .bg-gray-50,
+main .bg-gray-100,
+main .bg-gray-900,
+main .bg-gray-950,
+main [class*="bg-[#0"],
+main [class*="bg-[#1"] {
+  background-color: var(--app-surface) !important;
+}
+
+main .border-gray-700,
+main .border-gray-800,
+main .border-gray-900 {
+  border-color: var(--app-border) !important;
+}
+
+main .divide-gray-800 > :not([hidden]) ~ :not([hidden]),
+main .divide-gray-700 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--app-border) !important;
+}
+
+/* Cards / feature blocks that are not explicitly glass */
+main .rounded-xl.border,
+main .rounded-2xl.border,
+main .rounded-3xl.border {
+  border-color: var(--app-border) !important;
+}
+
+main .shadow,
+main .shadow-md,
+main .shadow-lg,
+main .shadow-xl,
+main .shadow-2xl {
+  --tw-shadow-color: rgba(15,23,42,.08);
+}
+
+html[data-theme="dark"] main .shadow,
+html[data-theme="dark"] main .shadow-md,
+html[data-theme="dark"] main .shadow-lg,
+html[data-theme="dark"] main .shadow-xl,
+html[data-theme="dark"] main .shadow-2xl {
+  --tw-shadow-color: rgba(0,0,0,.24);
+}
+
+/* Forms */
+main input,
+main select,
+main textarea {
+  color: var(--app-text) !important;
+  background-color: var(--app-surface-2) !important;
+  border-color: var(--app-border-strong) !important;
+}
+
+main input::placeholder,
+main textarea::placeholder {
+  color: var(--app-muted) !important;
+  opacity: 1;
+}
+
+main input:focus,
+main select:focus,
+main textarea:focus {
+  border-color: var(--app-brand) !important;
+  box-shadow: var(--focus-ring);
+}
+
+main label {
+  color: var(--app-text-2);
+}
+
+/* Buttons: one shared shape and interaction language */
+main button {
+  border-radius: .75rem;
+  transition: transform .18s ease, background-color .18s ease, border-color .18s ease,
+    color .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+
+main button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+main button:disabled {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+/* Tables */
+main table {
+  color: var(--app-text-2);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+main th {
+  color: var(--app-text) !important;
+  background: var(--app-surface-2) !important;
+  border-color: var(--app-border) !important;
+}
+
+main td {
+  color: var(--app-text-2) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Code / preformatted content */
+main code {
+  color: #4338ca;
+  background: rgba(99,102,241,.08);
+  border-radius: .35rem;
+  padding: .08rem .3rem;
+}
+
+main pre {
+  color: var(--app-text);
+  background: var(--app-surface-2) !important;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-lg);
+}
+
+html[data-theme="dark"] main code {
+  color: #c7d2fe;
+  background: rgba(99,102,241,.14);
+}
+
+/* Status / badge normalization */
+main .bg-brand-500\/20,
+main .bg-brand-600\/20,
+main .bg-emerald-500\/20,
+main .bg-emerald-600\/20 {
+  border-color: rgba(99,102,241,.2);
+}
+
+/* Mobile consistency */
+@media (max-width: 767px) {
+  main {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  main h1 {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+
+  main h2 {
+    font-size: clamp(1.25rem, 5vw, 1.65rem);
+  }
+
+  main .p-8 {
+    padding: 1.25rem;
+  }
+
+  main .p-6 {
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
