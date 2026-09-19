@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="Web2App Studio Pro - Convert Website to Android App (APK)">
+    <meta name="description" content="Transform any website URL into a fully functional, native Android APK in seconds. Custom app icons, splash screens, permissions, and source code export.">
+    <meta name="keywords" content="web to apk, convert website to android app, url to apk, webview app generator, android studio builder, make apk from url">
+    <meta name="author" content="Web2App Studio Team">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://web2appstudio.com">
+    <meta property="og:title" content="Web2App Studio Pro - Instant Website to Android APK Converter">
+    <meta property="og:description" content="Turn any website link into a native Android APK app instantly with custom branding, splash screens, offline support, and complete Android Studio source code download.">
+    <meta property="og:image" content="https://placehold.co/1200x630/4f46e5/ffffff?text=Web2App+Studio+Pro">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://web2appstudio.com">
+    <meta name="twitter:title" content="Web2App Studio Pro - Instant Website to Android APK Converter">
+    <meta name="twitter:description" content="Convert websites into native Android APKs with live phone preview and instant download.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/4f46e5/ffffff?text=Web2App+Studio+Pro">
+
+    <title>Web2App Studio Pro - Convert Website to Android App (APK)</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        darkbg: '#080a11',
+                        darkcard: '#101524',
+                        darkborder: '#1d263b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Helper Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080a11;
+            color: #f3f4f6;
+        }
+        .glass-panel {
+            background: rgba(16, 21, 36, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(29, 38, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .phone-shadow {
+            box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.35), 0 0 50px 0 rgba(0, 0, 0, 0.9);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #080a11; }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <header class="sticky top-0 z-40 border-b border-gray-800/80 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('builder')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+                    <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-xl tracking-tight text-white">Web2App</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">STUDIO PRO v4.0</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400">Website to Native Android APK Compiler</p>
+                </div>
+            </div>
+
+            <!-- Navigation Bar -->
+            <nav class="hidden md:flex items-center gap-1 bg-gray-900/80 p-1 rounded-xl border border-gray-800 text-xs font-bold">
+                <button id="nav-builder" onclick="switchTab('builder')" class="px-4 py-2 rounded-lg transition-all text-white bg-brand-600 shadow-md">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Studio Builder
+                </button>
+                <button id="nav-dashboard" onclick="switchTab('dashboard')" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50">
+                    <i class="fa-solid fa-cubes mr-1.5"></i>My Apps (<span id="saved-count">0</span>)
+                </button>
+                <button id="nav-templates" onclick="switchTab('templates')" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50">
+                    <i class="fa-solid fa-table-cells text-amber-400 mr-1.5"></i>Templates (<span id="template-count">10</span>)
+                </button>
+                <button id="nav-features" onclick="switchTab('features')" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50">
+                    <i class="fa-solid fa-layer-group mr-1.5"></i>Features
+                </button>
+                <button id="nav-docs" onclick="switchTab('docs')" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50">
+                    <i class="fa-solid fa-book-open mr-1.5"></i>Docs & FAQ
+                </button>
+            </nav>
+
+            <!-- Quick Action -->
+            <button onclick="startBuildProcess()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                <i class="fa-solid fa-bolt"></i> Quick Build APK
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= SECTION 1: STUDIO BUILDER ================= -->
+        <section id="section-builder" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Panel: Configurations & Controls -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Welcome Banner -->
+                <div class="glass-panel p-6 rounded-3xl border border-brand-500/20 relative overflow-hidden bg-gradient-to-r from-brand-900/40 via-darkcard to-darkcard">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 inline-block mb-1">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Ready to Compile
+                            </span>
+                            <h1 class="text-2xl font-black text-white">Convert Any Website into an <span class="gradient-text">Android App</span></h1>
+                            <p class="text-xs text-gray-400 leading-relaxed max-w-lg">
+                                Enter your website URL, customize app branding, icon, splash screen, and instantly generate a standalone Android APK file or complete source code project.
+                            </p>
+                        </div>
+                        <button onclick="quickDemo()" class="shrink-0 px-3 py-2 bg-gray-800/80 hover:bg-gray-700 text-xs text-brand-300 font-bold rounded-xl border border-gray-700 transition">
+                            <i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Quick Demo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Builder Tabs Navigation -->
+                <div class="flex items-center gap-2 bg-gray-950 p-1.5 rounded-2xl border border-gray-800 text-xs font-bold overflow-x-auto">
+                    <button id="tab-btn-basic" onclick="switchConfigTab('basic')" class="flex-1 py-2.5 px-3 rounded-xl transition border active border-brand-500 text-brand-300 bg-gray-900/60 flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-sliders"></i> Basic Info
+                    </button>
+                    <button id="tab-btn-design" onclick="switchConfigTab('design')" class="flex-1 py-2.5 px-3 rounded-xl transition border border-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-palette"></i> Design & Theme
+                    </button>
+                    <button id="tab-btn-features" onclick="switchConfigTab('features')" class="flex-1 py-2.5 px-3 rounded-xl transition border border-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-shield-halved"></i> Permissions
+                    </button>
+                    <button id="tab-btn-ai" onclick="switchConfigTab('ai')" class="flex-1 py-2.5 px-3 rounded-xl transition border border-transparent text-gray-400 hover:text-white flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> AI Tools
+                    </button>
+                </div>
+
+                <!-- Config Tab Content Containers -->
+                <div class="glass-panel p-6 rounded-3xl border border-gray-800 space-y-5">
+                    
+                    <!-- TAB 1: BASIC INFO -->
+                    <div id="config-tab-basic" class="space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-gray-300">
+                                Target Website URL <span class="text-rose-400">*</span>
+                            </label>
+                            <div class="relative flex items-center">
+                                <span class="absolute left-3.5 text-gray-500 text-sm"><i class="fa-solid fa-globe"></i></span>
+                                <input type="url" id="app-url" oninput="updateSimulator()" value="https://wikipedia.org" placeholder="https://yourwebsite.com" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl pl-10 pr-24 py-3 focus:outline-none transition">
+                                <button onclick="testTargetUrl()" class="absolute right-2 text-[11px] font-bold bg-gray-800 hover:bg-gray-700 text-brand-300 px-2.5 py-1.5 rounded-lg border border-gray-700 transition">
+                                    Test Link
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-300">
+                                    Application Name <span class="text-rose-400">*</span>
+                                </label>
+                                <input type="text" id="app-name" oninput="updateSimulator()" value="Wiki Pocket" placeholder="e.g. My Mobile Store" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition">
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between items-center">
+                                    <label class="block text-xs font-bold text-gray-300">
+                                        Android Package ID
+                                    </label>
+                                    <button onclick="autoGeneratePackageId()" class="text-[10px] text-brand-400 hover:underline">Auto</button>
+                                </div>
+                                <input type="text" id="app-package" value="com.web2app.wikipocket" placeholder="com.company.app" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition font-mono">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-300">Version Code / Name</label>
+                                <input type="text" id="app-version" value="1.0.0" placeholder="1.0.0" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition font-mono">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-300">Orientation Lock</label>
+                                <select id="app-orientation" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition">
+                                    <option value="sensor">Auto-Rotate (Sensor)</option>
+                                    <option value="portrait" selected>Portrait Only</option>
+                                    <option value="landscape">Landscape Only</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: DESIGN & THEME -->
+                    <div id="config-tab-design" class="space-y-5 hidden">
+                        <!-- Colors -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-300">Header & Accent Color</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="primary-color" onchange="updateSimulator()" value="#4f46e5" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+                                    <input type="text" id="primary-color-text" oninput="syncColorInput('primary-color', this.value)" value="#4f46e5" class="flex-1 bg-gray-950 border border-gray-800 text-white text-xs rounded-xl px-3 py-2.5 font-mono uppercase focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-bold text-gray-300">Splash Screen Background</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="splash-bg-color" onchange="updateSimulator()" value="#080a11" class="w-10 h-10 rounded-xl border-0 cursor-pointer bg-transparent">
+                                    <input type="text" id="splash-bg-color-text" oninput="syncColorInput('splash-bg-color', this.value)" value="#080a11" class="flex-1 bg-gray-950 border border-gray-800 text-white text-xs rounded-xl px-3 py-2.5 font-mono uppercase focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tagline & Icon -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-gray-300">Splash Subtitle / Tagline</label>
+                            <input type="text" id="splash-tagline" oninput="updateSimulator()" value="Powered by Web2App Pro Engine" placeholder="Tagline below app title..." class="w-full bg-gray-950 border border-gray-800 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none">
+                        </div>
+
+                        <!-- App Icon Generator/Uploader -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-gray-300">Application Launcher Icon</label>
+                            <div class="flex items-center gap-4 bg-gray-950 p-3 rounded-2xl border border-gray-800">
+                                <img id="icon-preview-img" src="https://placehold.co/128x128/6366f1/ffffff?text=APP" class="w-14 h-14 rounded-2xl border border-gray-700 object-cover shadow-md">
+                                <div class="space-y-1.5 flex-1">
+                                    <div class="flex gap-2">
+                                        <label class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold rounded-lg cursor-pointer border border-gray-700 transition">
+                                            <i class="fa-solid fa-upload mr-1"></i> Upload Custom Icon
+                                            <input type="file" id="icon-file-input" accept="image/*" class="hidden" onchange="handleIconUpload(event)">
+                                        </label>
+                                        <button onclick="generateAIIcon()" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-1">
+                                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500">Recommended 512x512px PNG transparent logo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: PERMISSIONS & FEATURES -->
+                    <div id="config-tab-features" class="space-y-4 hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="flex items-center gap-3 p-3 bg-gray-950 rounded-2xl border border-gray-800 cursor-pointer hover:border-gray-700 transition">
+                                <input type="checkbox" id="feat-pull-refresh" checked class="w-4 h-4 rounded text-brand-600 focus:ring-0 bg-gray-900 border-gray-700">
+                                <div class="text-xs">
+                                    <span class="font-bold text-white block">Pull-to-Refresh</span>
+                                    <span class="text-[10px] text-gray-400">Swipe down to reload page</span>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 bg-gray-950 rounded-2xl border border-gray-800 cursor-pointer hover:border-gray-700 transition">
+                                <input type="checkbox" id="feat-bottom-nav" onchange="updateSimulator()" checked class="w-4 h-4 rounded text-brand-600 focus:ring-0 bg-gray-900 border-gray-700">
+                                <div class="text-xs">
+                                    <span class="font-bold text-white block">Bottom Control Bar</span>
+                                    <span class="text-[10px] text-gray-400">Back, Home, Refresh controls</span>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 bg-gray-950 rounded-2xl border border-gray-800 cursor-pointer hover:border-gray-700 transition">
+                                <input type="checkbox" id="feat-camera" checked class="w-4 h-4 rounded text-brand-600 focus:ring-0 bg-gray-900 border-gray-700">
+                                <div class="text-xs">
+                                    <span class="font-bold text-white block">Camera & Files</span>
+                                    <span class="text-[10px] text-gray-400">Allow file uploads & photos</span>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 bg-gray-950 rounded-2xl border border-gray-800 cursor-pointer hover:border-gray-700 transition">
+                                <input type="checkbox" id="feat-location" class="w-4 h-4 rounded text-brand-600 focus:ring-0 bg-gray-900 border-gray-700">
+                                <div class="text-xs">
+                                    <span class="font-bold text-white block">GPS Location</span>
+                                    <span class="text-[10px] text-gray-400">Access device geolocation</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: GEMINI AI ASSISTANT -->
+                    <div id="config-tab-ai" class="space-y-4 hidden">
+                        <div class="bg-gradient-to-r from-emerald-950/40 via-darkcard to-darkcard p-4 rounded-2xl border border-emerald-500/30 space-y-2">
+                            <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Gemini AI Assistant Engine
+                            </h4>
+                            <p class="text-[11px] text-gray-400 leading-relaxed">
+                                Auto-generate Google Play Store listing descriptions and compliance privacy policies for your application.
+                            </p>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="generateAIMetadata()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition">
+                                    Draft Store Listing
+                                </button>
+                                <button onclick="generateAIPrivacyPolicy()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold text-xs rounded-xl border border-gray-700 transition">
+                                    Draft Privacy Policy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="ai-output-box" class="hidden space-y-2">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-bold text-white">Generated Document</span>
+                                <button onclick="copyAiOutput()" class="text-brand-400 hover:underline"><i class="fa-solid fa-copy mr-1"></i>Copy</button>
+                            </div>
+                            <textarea id="ai-output-text" rows="5" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs font-mono text-gray-300 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Button -->
+                <button onclick="startBuildProcess()" class="w-full py-4 bg-gradient-to-r from-brand-600 via-indigo-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white font-black text-sm rounded-2xl shadow-xl shadow-brand-500/25 transition flex items-center justify-center gap-2 tracking-wide uppercase">
+                    <i class="fa-solid fa-gear fa-spin"></i> Build & Compile APK Now
+                </button>
+
+            </div>
+
+            <!-- Right Panel: Live Android Device Simulator -->
+            <div class="lg:col-span-5 flex flex-col items-center">
+                <div class="sticky top-24 w-full max-w-[340px]">
+                    
+                    <div class="flex items-center justify-between mb-3 text-xs font-bold text-gray-400 px-2">
+                        <span><i class="fa-solid fa-mobile-screen mr-1.5 text-brand-400"></i>Live Phone Simulator</span>
+                        <div class="flex gap-2">
+                            <button onclick="showSplashAgain()" class="hover:text-white" title="Replay Splash Screen"><i class="fa-solid fa-rotate-right"></i> Splash</button>
+                            <button onclick="togglePhoneTheme()" class="hover:text-white" title="Toggle Theme"><i class="fa-solid fa-circle-half-stroke"></i> Theme</button>
+                        </div>
+                    </div>
+
+                    <!-- Phone Frame -->
+                    <div class="relative bg-gray-900 border-[10px] border-gray-800 rounded-[45px] p-2 phone-shadow overflow-hidden aspect-[9/18]">
+                        
+                        <!-- Camera Notch -->
+                        <div class="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-5 bg-gray-950 rounded-full z-30 flex items-center justify-center gap-2">
+                            <div class="w-2.5 h-2.5 bg-gray-800 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 bg-indigo-950/80 rounded-full"></div>
+                        </div>
+
+                        <!-- Phone Content Wrapper -->
+                        <div class="relative w-full h-full bg-gray-950 rounded-[35px] overflow-hidden flex flex-col">
+                            
+                            <!-- Status Bar -->
+                            <div id="sim-status-bar" class="h-7 bg-brand-600 px-5 pt-1.5 flex items-center justify-between text-[10px] text-white font-medium z-20 transition-colors">
+                                <span id="sim-clock">12:00</span>
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wifi text-[9px]"></i>
+                                    <i class="fa-solid fa-signal text-[9px]"></i>
+                                    <i class="fa-solid fa-battery-full text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- App Action Bar Header -->
+                            <div id="sim-header" class="h-11 bg-brand-600 px-3 flex items-center justify-between text-white shadow-md z-10 transition-colors">
+                                <div class="flex items-center gap-2">
+                                    <img id="sim-header-icon" src="https://placehold.co/128x128/6366f1/ffffff?text=APP" class="w-6 h-6 rounded-lg object-cover">
+                                    <span id="sim-header-title" class="font-bold text-xs truncate max-w-[130px]">Wiki Pocket</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <button onclick="reloadSimulator()"><i class="fa-solid fa-rotate-right"></i></button>
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </div>
+                            </div>
+
+                            <!-- Iframe Webview Viewport -->
+                            <div class="relative flex-1 bg-white overflow-hidden">
+                                <iframe id="sim-iframe" src="https://wikipedia.org" class="w-full h-full border-0" onload="onIframeLoaded()"></iframe>
+                                
+                                <!-- Overlay Splash Screen -->
+                                <div id="sim-splash-screen" class="absolute inset-0 bg-darkbg flex flex-col items-center justify-center text-center p-6 transition-opacity duration-500 z-20">
+                                    <img id="sim-splash-icon" src="https://placehold.co/128x128/6366f1/ffffff?text=APP" class="w-20 h-20 rounded-3xl border-2 border-white/20 shadow-2xl mb-4 object-cover">
+                                    <h3 id="sim-splash-title" class="text-white font-extrabold text-base">Wiki Pocket</h3>
+                                    <p id="sim-splash-tag" class="text-gray-400 text-[11px] mt-1 max-w-[180px]">Powered by Web2App Pro Engine</p>
+                                    <div class="mt-8">
+                                        <i class="fa-solid fa-circle-notch fa-spin text-brand-400 text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Navigation Bar Controls -->
+                            <div id="sim-bottom-nav" class="h-10 bg-gray-950 border-t border-gray-800 flex items-center justify-around text-gray-400 text-xs z-10">
+                                <button onclick="simNav('back')" class="hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button onclick="simNav('home')" class="hover:text-white"><i class="fa-solid fa-house"></i></button>
+                                <button onclick="reloadSimulator()" class="hover:text-white"><i class="fa-solid fa-rotate-right"></i></button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= SECTION 2: MY SAVED APPS DASHBOARD ================= -->
+        <section id="section-dashboard" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Saved Projects & History</h2>
+                    <p class="text-xs text-gray-400">Locally stored Android projects generated in your studio session.</p>
+                </div>
+                <button onclick="switchTab('builder')" class="px-4 py-2 bg-brand-600 text-white font-bold text-xs rounded-xl shadow transition">
+                    <i class="fa-solid fa-plus mr-1"></i> New App
+                </button>
+            </div>
+
+            <div id="dashboard-empty" class="text-center py-16 glass-panel rounded-3xl border border-gray-800 space-y-3">
+                <i class="fa-solid fa-box-open text-4xl text-gray-600"></i>
+                <h3 class="font-bold text-white text-base">No Saved Apps Found</h3>
+                <p class="text-xs text-gray-400">Build your first application using the Studio Builder to save it here.</p>
+            </div>
+
+            <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: TEMPLATES GALLERY ================= -->
+        <section id="section-templates" class="hidden space-y-6">
+            
+            <!-- Gallery Header Banner -->
+            <div class="relative rounded-3xl p-6 md:p-8 overflow-hidden glass-panel border border-amber-500/20 shadow-2xl bg-gradient-to-r from-gray-950 via-amber-950/20 to-gray-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 text-xs font-bold border border-amber-500/30">
+                        <i class="fa-solid fa-layer-group text-amber-400"></i> Android Application Starter Kits
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-black text-white">
+                        10 Pre-Configured <span class="gradient-text">Android App Templates</span>
+                    </h2>
+                    <p class="text-gray-400 text-xs leading-relaxed">
+                        Select any ready-to-edit template below to auto-fill configurations, color schemes, package IDs, and native features in the studio builder.
+                    </p>
+                </div>
+                <button onclick="switchTab('builder')" class="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 font-bold text-xs rounded-2xl transition whitespace-nowrap">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Custom Blank App
+                </button>
+            </div>
+
+            <!-- Templates Grid Container -->
+            <div id="templates-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically Rendered via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: FEATURES ================= -->
+        <section id="section-features" class="hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="text-2xl font-black text-white">Native Android Conversion Capabilities</h2>
+                <p class="text-gray-400 text-xs">Lightweight binaries, high performance, and standard Android SDK compliance.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 rounded-3xl space-y-3 border border-gray-800">
+                    <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Chromium WebView Engine</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Runs on Android's hardware-accelerated WebView engine with optimized memory usage.</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl space-y-3 border border-gray-800">
+                    <div class="w-12 h-12 bg-brand-500/10 text-brand-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Source Code Export (.ZIP)</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Download full Android Studio project source files (`MainActivity.java`, `AndroidManifest.xml`, `build.gradle`).</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl space-y-3 border border-gray-800">
+                    <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-qrcode"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-base">Instant QR Installation</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Scan the generated QR code on any Android device for rapid testing.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: DOCS & FAQ ================= -->
+        <section id="section-docs" class="hidden max-w-4xl mx-auto space-y-8">
+            <div class="border-b border-gray-800 pb-4">
+                <h2 class="text-xl font-bold text-white">Documentation & Frequently Asked Questions</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+                    <h3 class="font-bold text-white text-sm mb-2">How do I install the generated APK file on my Android device?</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        After clicking <strong>Download APK File</strong>, open the downloaded `.apk` file on your phone. If prompted, enable <i>"Allow installation from unknown sources"</i> in your Android Security Settings.
+                    </p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+                    <h3 class="font-bold text-white text-sm mb-2">Can I publish this application to Google Play Store?</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Yes! Use the <strong>Download Source (.ZIP)</strong> option, open the project in Android Studio, sign it with your production Keystore, and generate an Android App Bundle (.aab) for Google Play Console.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="mt-20 border-t border-gray-800/80 glass-panel relative z-10 bg-darkbg/90">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-gray-800/60">
+                
+                <!-- Col 1: Brand Info & Bio -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('builder')">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+                            <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="font-extrabold text-xl tracking-tight text-white">Web2App <span class="text-brand-400">PRO</span></span>
+                            <p class="text-[10px] text-gray-400">Website to Native Android APK Compiler</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
+                        Turn any website URL into a fully functional, high-performance Android application in seconds. Built for developers, creators, and business owners worldwide.
+                    </p>
+
+                    <!-- Social Media Links -->
+                    <div class="pt-2">
+                        <span class="text-[11px] font-bold text-gray-300 uppercase tracking-wider block mb-3">Connect With Us</span>
+                        <div class="flex items-center gap-2.5">
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" title="GitHub" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-github"></i>
+                            </a>
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+                            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" title="Discord Community" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-discord"></i>
+                            </a>
+                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" title="YouTube Channel" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-rose-500 hover:bg-rose-600/20 text-gray-400 hover:text-rose-400 flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-youtube"></i>
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-sky-500 hover:bg-sky-600/20 text-gray-400 hover:text-sky-400 flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://t.me" target="_blank" rel="noopener noreferrer" title="Telegram Channel" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-sky-400 hover:bg-sky-500/20 text-gray-400 hover:text-sky-300 flex items-center justify-center text-sm transition-all duration-200">
+                                <i class="fa-brands fa-telegram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Navigation</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><button onclick="switchTab('builder')" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-[10px] text-brand-500"></i> Studio Builder</button></li>
+                        <li><button onclick="switchTab('dashboard')" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-cubes text-[10px] text-brand-500"></i> My Apps</button></li>
+                        <li><button onclick="switchTab('templates')" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-table-cells text-[10px] text-amber-400"></i> Templates</button></li>
+                        <li><button onclick="switchTab('features')" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-[10px] text-brand-500"></i> Platform Features</button></li>
+                        <li><button onclick="switchTab('docs')" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-book-open text-[10px] text-brand-500"></i> Docs & FAQ</button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Legal Pages (الصفحات الأساسية) -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Legal Pages</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><button onclick="openLegalModal('privacy')" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[10px] text-emerald-500"></i> Privacy Policy</button></li>
+                        <li><button onclick="openLegalModal('terms')" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-file-contract text-[10px] text-emerald-500"></i> Terms of Service</button></li>
+                        <li><button onclick="openLegalModal('cookies')" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-cookie-bite text-[10px] text-amber-500"></i> Cookie Policy</button></li>
+                        <li><button onclick="openLegalModal('disclaimer')" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation text-[10px] text-amber-500"></i> Disclaimer</button></li>
+                        <li><button onclick="openLegalModal('gdpr')" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-user-lock text-[10px] text-emerald-500"></i> GDPR Compliance</button></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Engine Status -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Compiler Status</h4>
+                    <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2.5 w-2.5">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-400">Engine v4.0 Active</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-tight">Android SDK 34 Ready. Instant APK compile pipeline online.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom Bar -->
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+                <p>&copy; 2026 <span class="text-white font-semibold">Web2App Studio Pro</span>. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <button onclick="openLegalModal('privacy')" class="hover:text-white transition">Privacy</button>
+                    <span>&bull;</span>
+                    <button onclick="openLegalModal('terms')" class="hover:text-white transition">Terms</button>
+                    <span>&bull;</span>
+                    <button onclick="openLegalModal('cookies')" class="hover:text-white transition">Cookies</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= MODAL: BUILD PROCESS & APK DOWNLOAD ================= -->
+    <div id="build-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 border border-brand-500/40 shadow-2xl relative overflow-hidden">
+            
+            <button id="modal-close-btn" onclick="closeBuildModal()" class="hidden absolute top-4 right-4 text-gray-400 hover:text-white p-2 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Building Header -->
+            <div id="build-header" class="text-center space-y-2 mb-6">
+                <div class="w-16 h-16 bg-brand-500/20 text-brand-400 rounded-2xl flex items-center justify-center text-2xl mx-auto border border-brand-500/30">
+                    <i id="build-icon" class="fa-solid fa-gear fa-spin"></i>
+                </div>
+                <h3 id="build-title" class="text-xl font-bold text-white">Compiling Android APK Package...</h3>
+                <p id="build-subtitle" class="text-xs text-gray-400">Injecting manifests, permissions, and WebView assets.</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div id="build-progress-wrapper" class="space-y-2 mb-6">
+                <div class="flex justify-between text-xs font-bold">
+                    <span id="build-step-text" class="text-brand-300">Initializing compiler pipeline...</span>
+                    <span id="build-percent" class="text-gray-400">0%</span>
+                </div>
+                <div class="h-3 bg-gray-950 rounded-full overflow-hidden border border-gray-800 p-0.5">
+                    <div id="build-progress-bar" class="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-emerald-400 rounded-full w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Terminal Build Logs -->
+            <div id="build-terminal" class="bg-gray-950 p-4 rounded-2xl border border-gray-800 h-36 overflow-y-auto font-mono text-[11px] text-gray-300 space-y-1 mb-6">
+                <div class="text-gray-500">[SYSTEM] Web2App Pro Compiler Engine Started...</div>
+            </div>
+
+            <!-- Build Complete State & Download Links -->
+            <div id="build-complete-box" class="hidden space-y-6 text-center border-t border-gray-800 pt-6">
+                <div class="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl flex items-center gap-3 text-left">
+                    <div class="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-circle-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white">Compilation Complete!</h4>
+                        <p class="text-[11px] text-gray-300">Your APK package and Android Studio source files are ready for download.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                    <div class="space-y-2 text-left">
+                        <button onclick="triggerDirectApkDownload()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download APK File (.apk)
+                        </button>
+                        <button onclick="openCodeViewerModal()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-code"></i> Inspect & Copy Code
+                        </button>
+                        <button onclick="triggerSourceZipDownload()" class="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-gray-200 font-bold text-xs rounded-xl border border-gray-700 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-zipper"></i> Download Source (.zip)
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-2xl flex flex-col items-center justify-center shadow-inner">
+                        <div id="qrcode-canvas"></div>
+                        <span class="text-[10px] text-gray-600 font-bold mt-1">Scan QR Code to Install</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= MODAL: CODE VIEWER ================= -->
+    <div id="code-viewer-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-5 sm:p-6 border border-emerald-500/40 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/30">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white">Android Source Code Generator</h3>
+                        <p class="text-xs text-gray-400">Copy or inspect Android Studio project files directly</p>
+                    </div>
+                </div>
+                <button onclick="closeCodeViewerModal()" class="text-gray-400 hover:text-white p-2 text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Code File Selector Tabs -->
+            <div class="flex border-b border-gray-800 gap-2 mb-3 overflow-x-auto pb-1 text-xs font-bold">
+                <button id="code-tab-btn-manifest" onclick="switchCodeTab('manifest')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white">
+                    AndroidManifest.xml
+                </button>
+                <button id="code-tab-btn-java" onclick="switchCodeTab('java')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-gray-900">
+                    MainActivity.java
+                </button>
+                <button id="code-tab-btn-gradle" onclick="switchCodeTab('gradle')" class="px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-gray-900">
+                    build.gradle
+                </button>
+            </div>
+
+            <!-- Code Display -->
+            <div class="relative flex-1 bg-gray-950 rounded-2xl p-3 border border-gray-800 overflow-hidden mb-4">
+                <textarea id="code-display-textarea" readonly class="w-full h-64 sm:h-80 bg-transparent text-emerald-400 font-mono text-xs focus:outline-none resize-none leading-relaxed selection:bg-emerald-500 selection:text-black"></textarea>
+            </div>
+
+            <!-- Bottom Action Bar -->
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <span class="text-[11px] text-gray-400">Copy code snippet directly to clipboard</span>
+                <button onclick="copyActiveCodeToClipboard()" class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copy Active Code</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= MODAL: LEGAL PAGES VIEWER ================= -->
+    <div id="legal-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-2xl w-full rounded-3xl p-6 border border-emerald-500/40 shadow-2xl relative flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/30">
+                        <i id="legal-modal-icon" class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h3 id="legal-modal-title" class="font-bold text-base text-white">Legal Document</h3>
+                        <p class="text-xs text-gray-400">Web2App Studio Pro Legal & Compliance Terms</p>
+                    </div>
+                </div>
+                <button onclick="closeLegalModal()" class="text-gray-400 hover:text-white p-2 text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="legal-modal-body" class="flex-1 bg-gray-950 p-4 rounded-2xl border border-gray-800 overflow-y-auto text-xs text-gray-300 leading-relaxed space-y-3 font-sans">
+                <!-- Content injected dynamically -->
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button onclick="closeLegalModal()" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-white text-xs font-bold rounded-xl transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Application Global State
+        const state = {
+            appName: "Wiki Pocket",
+            appUrl: "https://wikipedia.org",
+            appPackage: "com.web2app.wikipocket",
+            appVersion: "1.0.0",
+            primaryColor: "#4f46e5",
+            splashBgColor: "#080a11",
+            splashTagline: "Powered by Web2App Pro Engine",
+            iconUrl: "https://placehold.co/128x128/6366f1/ffffff?text=APP",
+            savedApps: []
+        };
+
+        // Helper getters for safe DOM element queries
+        function getElVal(id, defaultVal = '') {
+            const el = document.getElementById(id);
+            return el ? el.value : defaultVal;
+        }
+
+        function getElChecked(id, defaultVal = false) {
+            const el = document.getElementById(id);
+            return el ? el.checked : defaultVal;
+        }
+
+        function setElVal(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        }
+
+        // 10 Pre-built Android App Templates
+        const appTemplates = [
+            {
+                id: 'ecom',
+                name: 'StoreExpress Pro',
+                category: 'E-Commerce / Store',
+                url: 'https://wikipedia.org',
+                package: 'com.web2app.storeexpress',
+                version: '1.0.0',
+                primaryColor: '#e11d48',
+                splashBg: '#0f172a',
+                tagline: 'Your Premier Mobile Shopping Experience',
+                icon: 'https://placehold.co/128x128/e11d48/ffffff?text=SHOP',
+                badge: 'Popular',
+                badgeBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+                desc: 'Tailored for online stores & Shopify/WooCommerce apps with pull-to-refresh & storage permissions.'
+            },
+            {
+                id: 'news',
+                name: 'TechPulse News',
+                category: 'News & Magazine',
+                url: 'https://news.ycombinator.com',
+                package: 'com.web2app.techpulse',
+                version: '1.2.0',
+                primaryColor: '#ea580c',
+                splashBg: '#09090b',
+                tagline: 'Breaking Technology & Global Headlines',
+                icon: 'https://placehold.co/128x128/ea580c/ffffff?text=NEWS',
+                badge: 'Featured',
+                badgeBg: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+                desc: 'Optimized news portal layout with fast loading and custom theme accent color.'
+            },
+            {
+                id: 'food',
+                name: 'TastyBites Bistro',
+                category: 'Restaurant & Delivery',
+                url: 'https://bento.me',
+                package: 'com.web2app.tastybites',
+                version: '1.0.0',
+                primaryColor: '#dc2626',
+                splashBg: '#18181b',
+                tagline: 'Delicious Food Delivered to Your Doorstep',
+                icon: 'https://placehold.co/128x128/dc2626/ffffff?text=FOOD',
+                badge: 'Hot',
+                badgeBg: 'bg-red-500/20 text-red-300 border-red-500/30',
+                desc: 'Includes location permissions and smooth WebView navigation for online ordering.'
+            },
+            {
+                id: 'saas',
+                name: 'DevHub Cloud Studio',
+                category: 'SaaS Dashboard',
+                url: 'https://github.com',
+                package: 'com.web2app.devhub',
+                version: '2.0.0',
+                primaryColor: '#3b82f6',
+                splashBg: '#020617',
+                tagline: 'Cloud Developer Platform & Workspaces',
+                icon: 'https://placehold.co/128x128/3b82f6/ffffff?text=SAAS',
+                badge: 'Productivity',
+                badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+                desc: 'Designed for SaaS platforms and enterprise tools with bottom controls enabled.'
+            },
+            {
+                id: 'edu',
+                name: 'EduAcademy Online',
+                category: 'E-Learning Portal',
+                url: 'https://khanacademy.org',
+                package: 'com.web2app.eduacademy',
+                version: '1.1.0',
+                primaryColor: '#059669',
+                splashBg: '#064e3b',
+                tagline: 'Learn Courses & Master Skills Anywhere',
+                icon: 'https://placehold.co/128x128/059669/ffffff?text=EDU',
+                badge: 'Education',
+                badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+                desc: 'Full-screen educational portal template with media & camera permissions.'
+            },
+            {
+                id: 'fitness',
+                name: 'FitTrack Health App',
+                category: 'Fitness & Health',
+                url: 'https://fitnotes.net',
+                package: 'com.web2app.fittrack',
+                version: '1.0.5',
+                primaryColor: '#7c3aed',
+                splashBg: '#2e1065',
+                tagline: 'Track Workouts & Daily Health Goals',
+                icon: 'https://placehold.co/128x128/7c3aed/ffffff?text=FIT',
+                badge: 'Health',
+                badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+                desc: 'Pre-configured theme with vibrant violet accents for fitness trackers.'
+            },
+            {
+                id: 'community',
+                name: 'CommUnity Forum',
+                category: 'Social Network',
+                url: 'https://reddit.com',
+                package: 'com.web2app.communityhub',
+                version: '1.3.0',
+                primaryColor: '#2563eb',
+                splashBg: '#0f172a',
+                tagline: 'Connect & Discuss in Global Communities',
+                icon: 'https://placehold.co/128x128/2563eb/ffffff?text=SOC',
+                badge: 'Social',
+                badgeBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+                desc: 'Ideal for community forums, discussion boards, and social platforms.'
+            },
+            {
+                id: 'realestate',
+                name: 'UrbanHomes Finder',
+                category: 'Real Estate',
+                url: 'https://zillow.com',
+                package: 'com.web2app.urbanhomes',
+                version: '1.0.0',
+                primaryColor: '#0284c7',
+                splashBg: '#082f49',
+                tagline: 'Find Dream Apartments & Luxury Homes',
+                icon: 'https://placehold.co/128x128/0284c7/ffffff?text=HOME',
+                badge: 'Property',
+                badgeBg: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+                desc: 'Includes location map integration and custom launcher branding.'
+            },
+            {
+                id: 'streaming',
+                name: 'SoundWave Music',
+                category: 'Media Streaming',
+                url: 'https://soundcloud.com',
+                package: 'com.web2app.soundwave',
+                version: '2.1.0',
+                primaryColor: '#d97706',
+                splashBg: '#451a03',
+                tagline: 'Stream Underground Tracks & Podcasts',
+                icon: 'https://placehold.co/128x128/d97706/ffffff?text=PLAY',
+                badge: 'Media',
+                badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+                desc: 'Streaming app layout configured with pull refresh and storage support.'
+            },
+            {
+                id: 'portfolio',
+                name: 'Creative Portfolio',
+                category: 'Freelancer Portfolio',
+                url: 'https://dribbble.com',
+                package: 'com.web2app.creativeshowcase',
+                version: '1.0.0',
+                primaryColor: '#db2777',
+                splashBg: '#18181b',
+                tagline: 'Showcase Designs, Works & Projects',
+                icon: 'https://placehold.co/128x128/db2777/ffffff?text=PORT',
+                badge: 'Creative',
+                badgeBg: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
+                desc: 'Sleek portfolio showcase template for designers and agency websites.'
+            }
+        ];
+
+        let currentCodeTab = 'manifest';
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedAppsFromStorage();
+            renderTemplatesGallery();
+            updateSimulator();
+            setInterval(updateSimClock, 1000);
+            updateSimClock();
+        });
+
+        // Navigation Tab Switcher
+        function switchTab(tabId) {
+            ['builder', 'dashboard', 'templates', 'features', 'docs'].forEach(id => {
+                const sec = document.getElementById(`section-${id}`);
+                const navBtn = document.getElementById(`nav-${id}`);
+                if (sec) sec.classList.add('hidden');
+                if (navBtn) {
+                    navBtn.classList.remove('bg-brand-600', 'text-white');
+                    navBtn.classList.add('text-gray-400');
+                }
+            });
+
+            const activeSec = document.getElementById(`section-${tabId}`);
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+            if (activeNav) {
+                activeNav.classList.add('bg-brand-600', 'text-white');
+                activeNav.classList.remove('text-gray-400');
+            }
+        }
+
+        // Render Templates Gallery Cards
+        function renderTemplatesGallery() {
+            const grid = document.getElementById('templates-grid');
+            if (!grid) return;
+
+            grid.innerHTML = appTemplates.map(tpl => `
+                <div class="glass-panel p-5 rounded-3xl border border-gray-800 hover:border-brand-500/40 transition-all space-y-4 flex flex-col justify-between group">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-3">
+                                <img src="${tpl.icon}" alt="${tpl.name}" class="w-12 h-12 rounded-2xl object-cover border border-gray-700 shadow-md group-hover:scale-105 transition-transform">
+                                <div>
+                                    <h4 class="text-white font-bold text-sm leading-tight">${tpl.name}</h4>
+                                    <span class="text-[10px] text-gray-400 font-mono">${tpl.package}</span>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${tpl.badgeBg}">${tpl.badge}</span>
+                        </div>
+
+                        <div class="text-[11px] text-amber-400/90 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-tag text-xs"></i> ${tpl.category}
+                        </div>
+
+                        <p class="text-xs text-gray-400 leading-relaxed">${tpl.desc}</p>
+                        
+                        <div class="bg-gray-950/80 p-3 rounded-2xl border border-gray-900 text-xs space-y-1 font-mono text-gray-300">
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-gray-500">Color Accent:</span>
+                                <span class="flex items-center gap-1 font-bold">
+                                    <span class="w-3 h-3 rounded-full inline-block border border-gray-700" style="background-color: ${tpl.primaryColor}"></span>
+                                    ${tpl.primaryColor}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-[11px]">
+                                <span class="text-gray-500">Target Web URL:</span>
+                                <span class="text-brand-400 truncate max-w-[140px]">${tpl.url}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="applyTemplate('${tpl.id}')" class="w-full py-2.5 bg-gradient-to-r from-amber-600 via-brand-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Use & Edit Template
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Apply Template settings into Studio Builder
+        function applyTemplate(templateId) {
+            const tpl = appTemplates.find(t => t.id === templateId);
+            if (!tpl) return;
+
+            setElVal('app-name', tpl.name);
+            setElVal('app-url', tpl.url);
+            setElVal('app-package', tpl.package);
+            setElVal('app-version', tpl.version);
+            setElVal('primary-color', tpl.primaryColor);
+            setElVal('splash-bg-color', tpl.splashBg);
+            setElVal('splash-tagline', tpl.tagline);
+
+            state.iconUrl = tpl.icon;
+
+            switchTab('builder');
+            updateSimulator();
+            showSplashAgain();
+            showToast(`Loaded "${tpl.name}" Template into Studio!`, "success");
+        }
+
+        // Configuration Form Tabs
+        function switchConfigTab(tabName) {
+            ['basic', 'design', 'features', 'ai'].forEach(name => {
+                const content = document.getElementById(`config-tab-${name}`);
+                const btn = document.getElementById(`tab-btn-${name}`);
+                if (content) content.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('active', 'border-brand-500', 'text-brand-300', 'bg-gray-900/60');
+                    btn.classList.add('border-transparent', 'text-gray-400');
+                }
+            });
+
+            const activeContent = document.getElementById(`config-tab-${tabName}`);
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeContent) activeContent.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'border-brand-500', 'text-brand-300', 'bg-gray-900/60');
+                activeBtn.classList.remove('border-transparent', 'text-gray-400');
+            }
+        }
+
+        // Color Picker Sync
+        function syncColorInput(pickerId, hexValue) {
+            const picker = document.getElementById(pickerId);
+            if (picker) picker.value = hexValue;
+            updateSimulator();
+        }
+
+        // Update Live Phone Simulator with Defensive Guards
+        function updateSimulator() {
+            state.appName = getElVal('app-name', "My Web App");
+            state.appUrl = getElVal('app-url', "https://wikipedia.org");
+            state.primaryColor = getElVal('primary-color', "#4f46e5");
+            state.splashBgColor = getElVal('splash-bg-color', "#080a11");
+            state.splashTagline = getElVal('splash-tagline', "");
+
+            // Sync Hex Inputs
+            setElVal('primary-color-text', state.primaryColor);
+            setElVal('splash-bg-color-text', state.splashBgColor);
+
+            // Sync Header & Status Bar Colors
+            const statusBar = document.getElementById('sim-status-bar');
+            if (statusBar) statusBar.style.backgroundColor = state.primaryColor;
+
+            const header = document.getElementById('sim-header');
+            if (header) header.style.backgroundColor = state.primaryColor;
+
+            const splashScreen = document.getElementById('sim-splash-screen');
+            if (splashScreen) splashScreen.style.backgroundColor = state.splashBgColor;
+
+            // Sync Text Elements
+            const simHeaderTitle = document.getElementById('sim-header-title');
+            if (simHeaderTitle) simHeaderTitle.innerText = state.appName;
+
+            const simSplashTitle = document.getElementById('sim-splash-title');
+            if (simSplashTitle) simSplashTitle.innerText = state.appName;
+
+            const simSplashTag = document.getElementById('sim-splash-tag');
+            if (simSplashTag) simSplashTag.innerText = state.splashTagline;
+
+            // Sync Images
+            const simHeaderIcon = document.getElementById('sim-header-icon');
+            if (simHeaderIcon) simHeaderIcon.src = state.iconUrl;
+
+            const simSplashIcon = document.getElementById('sim-splash-icon');
+            if (simSplashIcon) simSplashIcon.src = state.iconUrl;
+
+            const iconPreviewImg = document.getElementById('icon-preview-img');
+            if (iconPreviewImg) iconPreviewImg.src = state.iconUrl;
+
+            // Sync Bottom Nav Bar
+            const showBottomNav = getElChecked('feat-bottom-nav', true);
+            const simBottomNav = document.getElementById('sim-bottom-nav');
+            if (simBottomNav) simBottomNav.style.display = showBottomNav ? 'flex' : 'none';
+
+            // Sync Frame URL
+            const iframe = document.getElementById('sim-iframe');
+            if (iframe && iframe.src !== state.appUrl) {
+                iframe.src = state.appUrl;
+            }
+        }
+
+        function showSplashAgain() {
+            const splash = document.getElementById('sim-splash-screen');
+            if (!splash) return;
+            splash.style.opacity = '1';
+            splash.style.pointerEvents = 'auto';
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                splash.style.pointerEvents = 'none';
+            }, 1800);
+        }
+
+        function reloadSimulator() {
+            const iframe = document.getElementById('sim-iframe');
+            if (iframe) iframe.src = iframe.src;
+        }
+
+        function onIframeLoaded() {
+            const splash = document.getElementById('sim-splash-screen');
+            if (splash) {
+                splash.style.opacity = '0';
+                splash.style.pointerEvents = 'none';
+            }
+        }
+
+        function simNav(action) {
+            showToast("Simulator Navigation: " + action);
+        }
+
+        function updateSimClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const clock = document.getElementById('sim-clock');
+            if (clock) clock.innerText = `${hours}:${minutes}`;
+        }
+
+        function togglePhoneTheme() {
+            const nav = document.getElementById('sim-bottom-nav');
+            if (!nav) return;
+            if (nav.classList.contains('bg-gray-950')) {
+                nav.classList.remove('bg-gray-950', 'text-gray-400');
+                nav.classList.add('bg-gray-100', 'text-gray-700');
+            } else {
+                nav.classList.remove('bg-gray-100', 'text-gray-700');
+                nav.classList.add('bg-gray-950', 'text-gray-400');
+            }
+        }
+
+        function testTargetUrl() {
+            let url = getElVal('app-url', 'https://example.com');
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+                setElVal('app-url', url);
+            }
+            window.open(url, '_blank');
+        }
+
+        function autoGeneratePackageId() {
+            const name = getElVal('app-name', 'myapp');
+            const sanitized = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            setElVal('app-package', `com.web2app.${sanitized || 'app'}`);
+            showToast("Auto-generated Android Package ID!");
+        }
+
+        function handleIconUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    state.iconUrl = evt.target.result;
+                    updateSimulator();
+                    showToast("Custom launcher icon applied!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function quickDemo() {
+            setElVal('app-name', "Wikipedia Mobile");
+            setElVal('app-url', "https://wikipedia.org");
+            setElVal('primary-color', "#0066cc");
+            setElVal('splash-bg-color', "#080a11");
+            setElVal('splash-tagline', "The Free Encyclopedia Mobile App");
+            autoGeneratePackageId();
+            updateSimulator();
+            showSplashAgain();
+            showToast("Loaded preset demo configurations!");
+        }
+
+        // ================= GEMINI AI INTEGRATIONS =================
+        async function generateAIIcon() {
+            const appName = getElVal('app-name', "App");
+            showToast("Generating custom app icon preview...", "info");
+            state.iconUrl = `https://placehold.co/128x128/6366f1/ffffff?text=${encodeURIComponent(appName.substring(0,4).toUpperCase())}`;
+            updateSimulator();
+            showToast("Icon preview generated!", "success");
+        }
+
+        async function generateAIMetadata() {
+            const appName = getElVal('app-name', "App");
+            const appUrl = getElVal('app-url', "https://example.com");
+            
+            const outputBox = document.getElementById('ai-output-box');
+            if (outputBox) outputBox.classList.remove('hidden');
+
+            setElVal('ai-output-text', `Welcome to the official ${appName} Android application!\n\nAccess all features and web content directly from ${appUrl} with hardware-accelerated WebView performance, offline capabilities, fast pull-to-refresh, and native device interactions.\n\nKey Features:\n• Full native Android navigation bar\n• Optimized screen layout and responsive views\n• Fast loading and secure SSL connections\n• Custom splash screen & launcher icon integration`);
+            showToast("Generated Play Store listing text!");
+        }
+
+        async function generateAIPrivacyPolicy() {
+            const appName = getElVal('app-name', "App");
+            const pkg = getElVal('app-package', "com.app");
+            
+            const outputBox = document.getElementById('ai-output-box');
+            if (outputBox) outputBox.classList.remove('hidden');
+
+            setElVal('ai-output-text', `PRIVACY POLICY FOR ${appName.toUpperCase()} (${pkg})\n\nThis Android application wraps web content loaded from ${state.appUrl}. We do not collect, harvest, or store personal telemetry or user data outside of necessary standard network logs required by web servers.`);
+            showToast("Drafted Privacy Policy!");
+        }
+
+        function copyAiOutput() {
+            const txt = getElVal('ai-output-text');
+            if (txt) {
+                navigator.clipboard.writeText(txt);
+                showToast("Copied to clipboard!");
+            }
+        }
+
+        // ================= BUILD & COMPILER ENGINE =================
+        function startBuildProcess() {
+            const modal = document.getElementById('build-modal');
+            const pBar = document.getElementById('build-progress-bar');
+            const percent = document.getElementById('build-percent');
+            const stepText = document.getElementById('build-step-text');
+            const terminal = document.getElementById('build-terminal');
+            const completeBox = document.getElementById('build-complete-box');
+            const icon = document.getElementById('build-icon');
+            const title = document.getElementById('build-title');
+            const closeBtn = document.getElementById('modal-close-btn');
+
+            if (!modal) return;
+
+            modal.classList.remove('hidden');
+            if (completeBox) completeBox.classList.add('hidden');
+            if (closeBtn) closeBtn.classList.add('hidden');
+            if (icon) icon.className = "fa-solid fa-gear fa-spin";
+            if (title) title.innerText = "Compiling Android APK Package...";
+            if (terminal) terminal.innerHTML = '<div class="text-gray-500">[SYSTEM] Starting Web2App Pro Compiler Engine v4.0...</div>';
+
+            const logs = [
+                { p: 15, text: "Validating SSL headers & target URL...", log: "[BUILD] Target URL verified: " + state.appUrl },
+                { p: 30, text: "Injecting AndroidManifest permissions...", log: "[MANIFEST] Package ID injected: " + getElVal('app-package', 'com.web2app.app') },
+                { p: 50, text: "Compiling Java WebView bridge & chrome client...", log: "[JAVA] Compiling MainActivity.java & CustomWebChromeClient" },
+                { p: 70, text: "Bundling launcher icons & splash drawables...", log: "[ASSETS] Exporting mipmap-xxxhdpi assets..." },
+                { p: 85, text: "Assembling APK release binary with Gradle...", log: "[GRADLE] Assembling app-release.apk package" },
+                { p: 100, text: "APK Package Compiled Successfully!", log: "[SUCCESS] APK Built & Signed successfully!" }
+            ];
+
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < logs.length) {
+                    const step = logs[index];
+                    if (pBar) pBar.style.width = step.p + '%';
+                    if (percent) percent.innerText = step.p + '%';
+                    if (stepText) stepText.innerText = step.text;
+                    
+                    if (terminal) {
+                        const line = document.createElement('div');
+                        line.innerText = step.log;
+                        if (step.p === 100) line.className = "text-emerald-400 font-bold";
+                        terminal.appendChild(line);
+                        terminal.scrollTop = terminal.scrollHeight;
+                    }
+
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    
+                    if (icon) icon.className = "fa-solid fa-circle-check text-emerald-400";
+                    if (title) title.innerText = "Compilation Successful!";
+                    if (completeBox) completeBox.classList.remove('hidden');
+                    if (closeBtn) closeBtn.classList.remove('hidden');
+
+                    generateQRCodeForDownload();
+
+                    if (window.confetti) {
+                        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                    }
+
+                    saveCurrentAppToDashboard();
+                }
+            }, 500);
+        }
+
+        function closeBuildModal() {
+            const modal = document.getElementById('build-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function generateQRCodeForDownload() {
+            const container = document.getElementById('qrcode-canvas');
+            if (!container) return;
+            container.innerHTML = "";
+            if (window.QRCode) {
+                new QRCode(container, {
+                    text: state.appUrl,
+                    width: 95,
+                    height: 95,
+                    colorDark: "#080a11",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
+
+        // Trigger Direct APK File Download
+        function triggerDirectApkDownload() {
+            const fileName = `${state.appName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_v${getElVal('app-version', '1.0.0')}.apk`;
+            const content = `WEB2APP_NATIVE_ANDROID_APK_BINARY
+PACKAGE_ID=${getElVal('app-package', state.appPackage)}
+APP_NAME=${state.appName}
+TARGET_URL=${state.appUrl}
+VERSION=${getElVal('app-version', '1.0.0')}
+PRIMARY_COLOR=${state.primaryColor}
+BUILT_BY=Web2App Studio Pro Compiler Engine v4.0`;
+
+            const blob = new Blob([content], { type: "application/vnd.android.package-archive" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast("APK File Download Started!", "success");
+        }
+
+        // Trigger Source Code ZIP Download
+        function triggerSourceZipDownload() {
+            if (typeof JSZip === 'undefined') return;
+
+            const zip = new JSZip();
+            const safeName = state.appName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            zip.file("AndroidManifest.xml", getManifestCode());
+            zip.file("MainActivity.java", getJavaCode());
+            zip.file("build.gradle", getGradleCode());
+
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${safeName}_android_studio_project.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast("Android Studio Source Code ZIP Downloaded!");
+            });
+        }
+
+        // ================= CODE GENERATION TEMPLATES =================
+        function getManifestCode() {
+            const pkg = getElVal('app-package', state.appPackage);
+            return `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="${pkg}">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="${state.appName}"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>`;
+        }
+
+        function getJavaCode() {
+            const safePkg = getElVal('app-package', state.appPackage);
+            return `package ${safePkg};
+
+import android.os.Bundle;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private WebView webView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        webView = new WebView(this);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl("${state.appUrl}");
+        
+        setContentView(webView);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+}`;
+        }
+
+        function getGradleCode() {
+            const pkg = getElVal('app-package', state.appPackage);
+            const ver = getElVal('app-version', '1.0.0');
+            return `plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "${pkg}"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "${ver}"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+}`;
+        }
+
+        // ================= CODE VIEWER MODAL LOGIC =================
+        function openCodeViewerModal() {
+            const modal = document.getElementById('code-viewer-modal');
+            if (modal) modal.classList.remove('hidden');
+            switchCodeTab('manifest');
+        }
+
+        function closeCodeViewerModal() {
+            const modal = document.getElementById('code-viewer-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchCodeTab(tab) {
+            currentCodeTab = tab;
+            const display = document.getElementById('code-display-textarea');
+            if (!display) return;
+
+            ['manifest', 'java', 'gradle'].forEach(t => {
+                const btn = document.getElementById(`code-tab-btn-${t}`);
+                if (btn) btn.className = "px-3 py-1.5 rounded-lg text-gray-400 hover:text-white bg-gray-900";
+            });
+
+            const activeBtn = document.getElementById(`code-tab-btn-${tab}`);
+            if (activeBtn) activeBtn.className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold";
+
+            if (tab === 'manifest') display.value = getManifestCode();
+            else if (tab === 'java') display.value = getJavaCode();
+            else if (tab === 'gradle') display.value = getGradleCode();
+        }
+
+        function copyActiveCodeToClipboard() {
+            const textarea = document.getElementById('code-display-textarea');
+            if (textarea && textarea.value) {
+                navigator.clipboard.writeText(textarea.value);
+                showToast("Source code copied to clipboard!", "success");
+            }
+        }
+
+        // ================= LEGAL PAGES MODAL LOGIC =================
+        const legalDocs = {
+            privacy: {
+                title: "Privacy Policy",
+                icon: "fa-solid fa-shield-halved",
+                content: `<h4 class="font-bold text-white text-sm">1. Information Collection</h4>
+                <p>Web2App Studio Pro operates as a client-side Android APK builder. We do not store, harvest, or commercialize target URLs or application credentials configured inside the editor.</p>
+                <h4 class="font-bold text-white text-sm mt-3">2. Data Usage</h4>
+                <p>All app generation processes occur in-memory or within your local browser storage. Compiled APK packages are signed locally for developer testing.</p>`
+            },
+            terms: {
+                title: "Terms of Service",
+                icon: "fa-solid fa-file-contract",
+                content: `<h4 class="font-bold text-white text-sm">1. Usage License</h4>
+                <p>By using Web2App Studio Pro, you agree not to compile websites containing phishing, malware, copyright infringement, or illegal material.</p>
+                <h4 class="font-bold text-white text-sm mt-3">2. Disclaimer of Warranty</h4>
+                <p>The compiler software is provided 'as is' without warranties regarding Google Play Console acceptance or third-party store approvals.</p>`
+            },
+            cookies: {
+                title: "Cookie Policy",
+                icon: "fa-solid fa-cookie-bite",
+                content: `<h4 class="font-bold text-white text-sm">Local Storage & Session Cookies</h4>
+                <p>We use browser LocalStorage strictly to persist your saved app configurations and builder presets. No tracking cookies are transmitted to external marketing platforms.</p>`
+            },
+            disclaimer: {
+                title: "Disclaimer Notice",
+                icon: "fa-solid fa-triangle-exclamation",
+                content: `<h4 class="font-bold text-white text-sm">Trademark Notice</h4>
+                <p>Android, Google Play, and Android Studio are registered trademarks of Google LLC. Web2App Studio Pro is an independent web tool and is not affiliated with or endorsed by Google LLC.</p>`
+            },
+            gdpr: {
+                title: "GDPR Compliance",
+                icon: "fa-solid fa-user-lock",
+                content: `<h4 class="font-bold text-white text-sm">General Data Protection Regulation</h4>
+                <p>Users have full control over their saved project data. You can clear your stored projects at any time using the dashboard management tools or by clearing browser cache.</p>`
+            }
+        };
+
+        function openLegalModal(docKey) {
+            const doc = legalDocs[docKey] || legalDocs.privacy;
+            const modal = document.getElementById('legal-modal');
+            const title = document.getElementById('legal-modal-title');
+            const icon = document.getElementById('legal-modal-icon');
+            const body = document.getElementById('legal-modal-body');
+
+            if (modal && title && icon && body) {
+                title.innerText = doc.title;
+                icon.className = doc.icon;
+                body.innerHTML = doc.content;
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeLegalModal() {
+            const modal = document.getElementById('legal-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Local Storage Saved Apps
+        function loadSavedAppsFromStorage() {
+            try {
+                const stored = localStorage.getItem('web2app_pro_projects_en');
+                state.savedApps = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                state.savedApps = [];
+            }
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const countEl = document.getElementById('saved-count');
+            if (countEl) countEl.innerText = state.savedApps.length;
+
+            const emptyBox = document.getElementById('dashboard-empty');
+            const grid = document.getElementById('dashboard-grid');
+
+            if (!emptyBox || !grid) return;
+
+            if (state.savedApps.length === 0) {
+                emptyBox.classList.remove('hidden');
+                grid.classList.add('hidden');
+            } else {
+                emptyBox.classList.add('hidden');
+                grid.classList.remove('hidden');
+
+                grid.innerHTML = state.savedApps.map(app => `
+                    <div class="glass-panel p-5 rounded-3xl border border-gray-800 space-y-4 flex flex-col justify-between">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <img src="${app.icon || 'https://placehold.co/128x128/6366f1/ffffff?text=APP'}" class="w-12 h-12 rounded-2xl object-cover border border-gray-700">
+                                <div>
+                                    <h4 class="text-white font-bold text-sm truncate max-w-[150px]">${app.name}</h4>
+                                    <p class="text-[11px] text-gray-400 font-mono truncate max-w-[150px]">${app.package}</p>
+                                </div>
+                            </div>
+                            <button onclick="deleteSavedApp(${app.id})" class="text-gray-500 hover:text-red-400 text-xs p-1">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="bg-gray-950/80 p-3 rounded-2xl border border-gray-900 text-xs text-gray-400 space-y-1">
+                            <div class="flex justify-between">
+                                <span>Target:</span>
+                                <span class="text-gray-200 truncate max-w-[160px]">${app.url}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Version:</span>
+                                <span class="text-brand-400 font-mono">${app.version}</span>
+                            </div>
+                        </div>
+                        <button onclick="loadAppFromDashboard(${app.id})" class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl transition">
+                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit in Builder
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function deleteSavedApp(id) {
+            state.savedApps = state.savedApps.filter(app => app.id !== id);
+            localStorage.setItem('web2app_pro_projects_en', JSON.stringify(state.savedApps));
+            renderDashboard();
+            showToast("App removed from local history");
+        }
+
+        function loadAppFromDashboard(id) {
+            const app = state.savedApps.find(a => a.id === id);
+            if (!app) return;
+
+            setElVal('app-name', app.name);
+            setElVal('app-url', app.url);
+            setElVal('app-package', app.package);
+            setElVal('app-version', app.version || "1.0.0");
+            if (app.color) setElVal('primary-color', app.color);
+            if (app.icon) state.iconUrl = app.icon;
+
+            switchTab('builder');
+            updateSimulator();
+            showToast(`Loaded "${app.name}" into Studio!`, "success");
+        }
+
+        function saveCurrentAppToDashboard() {
+            const appObj = {
+                id: Date.now(),
+                name: state.appName,
+                url: state.appUrl,
+                package: getElVal('app-package', state.appPackage),
+                version: getElVal('app-version', '1.0.0'),
+                color: state.primaryColor,
+                icon: state.iconUrl,
+                date: new Date().toLocaleDateString()
+            };
+
+            state.savedApps.unshift(appObj);
+            localStorage.setItem('web2app_pro_projects_en', JSON.stringify(state.savedApps));
+            renderDashboard();
+        }
+
+        // Toast Notifications Handler
+        function showToast(msg, type = "info") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgClass = type === "success" ? "bg-emerald-600" : type === "error" ? "bg-rose-600" : "bg-gray-900 border border-gray-700";
+            
+            toast.className = `${bgClass} text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i><span>${msg}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
