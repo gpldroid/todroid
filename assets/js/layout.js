@@ -102,7 +102,7 @@
   };
   let savedTheme = null;
   try { savedTheme = localStorage.getItem(themeKey); } catch (e) {}
-  applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+  applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
   document.querySelectorAll('[data-theme-toggle]').forEach(btn => btn.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
     try { localStorage.setItem(themeKey, next); } catch (e) {}
