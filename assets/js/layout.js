@@ -117,17 +117,34 @@
   const menuButton = document.querySelector('.mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
   if (menuButton && mobileMenu) {
-    menuButton.addEventListener('click', () => {
-      const open = !mobileMenu.classList.contains('hidden');
-      mobileMenu.classList.toggle('hidden', open);
-      menuButton.setAttribute('aria-expanded', String(!open));
-      menuButton.setAttribute('aria-label', open ? 'Open navigation menu' : 'Close navigation menu');
-      menuButton.querySelector('i').className = open ? 'fa-solid fa-bars' : 'fa-solid fa-xmark';
+    const setMenuState = (open) => {
+      mobileMenu.classList.toggle('hidden', !open);
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+      const icon = menuButton.querySelector('i');
+      if (icon) icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    };
+    menuButton.addEventListener('click', () => setMenuState(mobileMenu.classList.contains('hidden')));
+    mobileMenu.addEventListener('click', (event) => {
+      if (event.target.closest('a')) setMenuState(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+        setMenuState(false);
+        menuButton.focus();
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (!mobileMenu.classList.contains('hidden') && !mobileMenu.contains(event.target) && !menuButton.contains(event.target)) {
+        setMenuState(false);
+      }
     });
   }
 
   const consentKey = 'web2app-cookie-consent-v1';
-  if (!localStorage.getItem(consentKey)) {
+  let hasConsent = false;
+  try { hasConsent = Boolean(localStorage.getItem(consentKey)); } catch (e) { hasConsent = false; }
+  if (!hasConsent) {
     const box = document.createElement('aside');
     box.id = 'cookie-consent';
     box.className = 'cookie-consent fixed inset-x-3 bottom-3 sm:left-auto sm:right-5 sm:max-w-md z-[100] glass-panel border border-gray-700 rounded-2xl p-4 shadow-2xl';
@@ -148,7 +165,7 @@
       </div>`;
     document.body.appendChild(box);
     box.querySelectorAll('[data-cookie-action]').forEach(btn => btn.addEventListener('click', () => {
-      localStorage.setItem(consentKey, btn.dataset.cookieAction);
+      try { localStorage.setItem(consentKey, btn.dataset.cookieAction); } catch (e) {}
       box.remove();
     }));
   }
