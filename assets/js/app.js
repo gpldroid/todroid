@@ -188,6 +188,7 @@
             loadSavedAppsFromStorage();
             renderTemplatesGallery();
             updateSimulator();
+            validatePackageId();
             setInterval(updateSimClock, 1000);
             updateSimClock();
 
@@ -438,11 +439,44 @@
             window.open(url, '_blank');
         }
 
+        function normalizePackageSegment(value) {
+            return String(value || '')
+                .toLowerCase()
+                .replace(/[^a-z0-9_]/g, '')
+                .replace(/^[^a-z_]+/, '');
+        }
+
+        function isValidAndroidPackageId(value) {
+            const pkg = String(value || '').trim();
+            if (!pkg || pkg.length > 255 || pkg.startsWith('.') || pkg.endsWith('.') || pkg.includes('..')) return false;
+            const parts = pkg.split('.');
+            return parts.length >= 2 && parts.every(part => /^[a-z_][a-z0-9_]*$/.test(part));
+        }
+
+        function validatePackageId() {
+            const input = document.getElementById('app-package');
+            const status = document.getElementById('app-package-status');
+            if (!input || !status) return false;
+
+            const valid = isValidAndroidPackageId(input.value);
+            input.setAttribute('aria-invalid', valid ? 'false' : 'true');
+            status.classList.toggle('is-valid', valid);
+            status.classList.toggle('is-invalid', !valid);
+            status.textContent = valid
+                ? 'Valid Android package format'
+                : 'Use at least two segments, e.g. com.company.app';
+            return valid;
+        }
+
         function autoGeneratePackageId() {
             const name = getElVal('app-name', 'myapp');
-            const sanitized = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            setElVal('app-package', `com.web2app.${sanitized || 'app'}`);
-            showToast("Auto-generated Android Package ID!");
+            const words = name.trim().split(/\\s+/).filter(Boolean);
+            const base = normalizePackageSegment(words.join('')) || 'app';
+            const packageId = `com.web2app.${base}`;
+            setElVal('app-package', packageId);
+            validatePackageId();
+            const input = document.getElementById('app-package');
+            if (input) input.focus();
         }
 
         function handleIconUpload(e) {
