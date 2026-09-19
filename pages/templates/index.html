@@ -66,7 +66,7 @@ const templates = [
 ];
 const grid=document.getElementById('templates-grid');
 grid.innerHTML=templates.map(t=>`
-<article class="glass-panel p-5 rounded-3xl border border-gray-800 hover:border-brand-500/40 transition-all space-y-4 flex flex-col justify-between group">
+<article class="ui-card space-y-4 flex flex-col justify-between group">
 <div class="space-y-3">
 <div class="flex items-start justify-between gap-2">
 <div class="flex items-center gap-3"><img src="${t.icon}" alt="${t.name}" width="48" height="48" loading="lazy" class="w-12 h-12 rounded-2xl object-cover border border-gray-700 shadow-md group-hover:scale-105 transition-transform"><div><h2 class="text-white font-bold text-sm leading-tight">${t.name}</h2><span class="text-[10px] text-gray-400 font-mono">${t.pkg}</span></div></div>
@@ -78,7 +78,7 @@ grid.innerHTML=templates.map(t=>`
 <div class="flex justify-between items-center text-[11px]"><span class="text-gray-500">Color Accent:</span><span class="flex items-center gap-1 font-bold"><span class="w-3 h-3 rounded-full inline-block border border-gray-700" style="background-color:${t.color}"></span>${t.color}</span></div>
 <div class="flex justify-between items-center text-[11px]"><span class="text-gray-500">Target Web URL:</span><span class="text-brand-400 truncate max-w-[140px]">${t.url}</span></div>
 </div></div>
-<button type="button" onclick="useTemplate('${t.id}')" class="w-full py-2.5 bg-gradient-to-r from-amber-600 via-brand-600 to-indigo-600 hover:from-amber-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Use & Edit Template</button>
+<button type="button" onclick="useTemplate('${t.id}')" class="ui-btn ui-btn-primary w-full"><i class="fa-solid fa-wand-magic-sparkles"></i> Use & Edit Template</button>
 </article>`).join('');
 function useTemplate(id){
  const t=templates.find(x=>x.id===id); if(!t)return;
