@@ -49,7 +49,7 @@
             ${nav.map(([href,icon,label]) => `<a href="${root}${href}" class="px-3 py-2 rounded-lg transition-all ${isActive(href) ? 'text-white bg-brand-600 shadow-md' : 'text-gray-400 hover:text-white hover:bg-gray-800/60'}"><i class="fa-solid ${icon} mr-1.5" aria-hidden="true"></i>${label}</a>`).join('')}
           </nav>
           <div class="flex items-center gap-2">
-            <a href="${root}index.html" class="hidden sm:inline-flex px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition">
+            <button type="button" class="theme-toggle inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-700 bg-gray-900/80 text-gray-200" data-theme-toggle aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>\n            <a href="${root}index.html" class="hidden sm:inline-flex px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition">
               <i class="fa-solid fa-bolt mr-1.5" aria-hidden="true"></i> Quick Build
             </a>
             <button type="button" class="mobile-menu-button lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-700 bg-gray-900/80 text-gray-200" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -86,6 +86,31 @@
         </div>
       </footer>`;
   }
+
+  const themeKey = 'web2app-theme';
+  const applyTheme = (theme) => {
+    const selected = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = selected;
+    document.documentElement.classList.toggle('dark', selected === 'dark');
+    document.documentElement.classList.toggle('light', selected === 'light');
+    document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
+      const light = selected === 'light';
+      btn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+      btn.title = light ? 'Switch to dark mode' : 'Switch to light mode';
+      btn.innerHTML = '<i class="fa-solid ' + (light ? 'fa-moon' : 'fa-sun') + '" aria-hidden="true"></i>';
+    });
+  };
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem(themeKey); } catch (e) {}
+  applyTheme(savedTheme === 'light' ? 'light' : 'dark');
+  document.querySelectorAll('[data-theme-toggle]').forEach(btn => btn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    try { localStorage.setItem(themeKey, next); } catch (e) {}
+    applyTheme(next);
+  }));
+  window.addEventListener('storage', (event) => {
+    if (event.key === themeKey) applyTheme(event.newValue === 'light' ? 'light' : 'dark');
+  });
 
   document.querySelectorAll('[data-current-year]').forEach(el => el.textContent = new Date().getFullYear());
 
