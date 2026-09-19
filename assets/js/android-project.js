@@ -22,7 +22,7 @@
 
   function normalizePackage(raw) {
     let pkg = String(raw || 'com.web2app.app').trim().toLowerCase().replace(/[^a-z0-9_.]/g, '');
-    pkg = pkg.replace(/\\.{2,}/g, '.').replace(/^\\.|\\.$/g, '');
+    pkg = pkg.replace(/\.{2,}/g, '.').replace(/^\.+|\.+$/g, '');
     const parts = pkg.split('.').filter(Boolean).map(p => /^[a-z_]/.test(p) ? p : 'app' + p);
     pkg = parts.join('.');
     if (parts.length < 2) pkg = 'com.web2app.' + (parts[0] || 'app');
@@ -30,7 +30,7 @@
   }
 
   function versionCode(version) {
-    const m = String(version || '1.0.0').match(/\\d+/g) || ['1','0','0'];
+    const m = String(version || '1.0.0').match(/\d+/g) || ['1','0','0'];
     const n = Number((m[0] || '1')) * 10000 + Number((m[1] || '0')) * 100 + Number((m[2] || '0'));
     return Math.max(1, Math.min(2100000000, n));
   }
@@ -58,7 +58,7 @@
   }
 
   function packagePath(pkg) {
-    return pkg.replace(/\\./g, '/');
+    return pkg.replace(/\./g, '/');
   }
 
   function manifest(c) {
