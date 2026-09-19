@@ -144,7 +144,7 @@
       '                return true;',
       '            }',
       '            @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {',
-      '                if (request.isForMainFrame()) view.loadDataWithBaseURL(null, "<html><body style=" + "\'font-family:sans-serif;padding:32px;text-align:center\'" + "><h2>Connection problem</h2><p>Please check your connection and try again.</p></body></html>", "text/html", "UTF-8", null);',
+      '                if (request.isForMainFrame()) view.loadDataWithBaseURL(null, "<html><body style=" + "'font-family:sans-serif;padding:32px;text-align:center'" + "><h2>Connection problem</h2><p>Please check your connection and try again.</p></body></html>", "text/html", "UTF-8", null);',
       '            }',
       '        });',
       '        webView.setWebChromeClient(new WebChromeClient() {',
@@ -279,6 +279,7 @@
   window.startBuildProcess = build;
   window.web2AppProjectExport = writeProject;
   window.triggerSourceZipDownload = writeProject;
+
   function githubApiHeaders(token) {
     return {
       'Accept': 'application/vnd.github+json',
@@ -305,13 +306,38 @@
   function createApkBuildIndicator() {
     var existing = document.getElementById('apk-build-indicator');
     if (existing) existing.remove();
+
     var box = document.createElement('div');
     box.id = 'apk-build-indicator';
     box.setAttribute('role', 'status');
     box.setAttribute('aria-live', 'polite');
-    box.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;width:min(92vw,430px);padding:14px 16px;border:1px solid rgba(99,102,241,.35);border-radius:16px;background:rgba(15,23,42,.96);color:#fff;box-shadow:0 18px 50px rgba(0,0,0,.35);font-family:Inter,system-ui,sans-serif;backdrop-filter:blur(14px);';
-    box.innerHTML = '<div style="display:flex;align-items:center;gap:10px"><span id="apk-build-indicator-icon" style="font-size:18px">⚙️</span><div style="flex:1;min-width:0"><div id="apk-build-indicator-title" style="font-weight:800;font-size:13px">Starting APK build...</div><div id="apk-build-indicator-step" style="margin-top:3px;color:#94a3b8;font-size:11px">Connecting to GitHub Actions...</div></div><div style="text-align:right;min-width:58px"><div id="apk-build-indicator-timer" style="font:800 18px/1.1 ui-monospace,SFMono-Regular,monospace">00:00</div><div style="margin-top:3px;color:#64748b;font-size:9px;text-transform:uppercase">Elapsed</div></div></div><div style="height:4px;margin-top:11px;border-radius:999px;background:#1e293b;overflow:hidden"><div id="apk-build-indicator-bar" style="height:100%;width:4%;border-radius:999px;background:linear-gradient(90deg,#6366f1,#14b8a6);transition:width .5s ease"></div></div>';
+    box.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;width:min(92vw,460px);padding:15px 16px;border:1px solid rgba(99,102,241,.38);border-radius:18px;background:rgba(15,23,42,.97);color:#fff;box-shadow:0 20px 55px rgba(0,0,0,.38);font-family:Inter,system-ui,sans-serif;backdrop-filter:blur(16px);';
+
+    box.innerHTML =
+      '<div style="display:flex;align-items:center;gap:11px">' +
+        '<div id="apk-build-indicator-icon-wrap" style="position:relative;width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:rgba(99,102,241,.16);border:1px solid rgba(129,140,248,.24)">' +
+          '<span id="apk-build-indicator-icon" style="font-size:18px">⚙️</span>' +
+        '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div id="apk-build-indicator-title" style="font-weight:800;font-size:13px">Starting APK build...</div>' +
+          '<div id="apk-build-indicator-step" style="margin-top:3px;color:#a5b4fc;font-size:11px">Preparing secure GitHub Actions request...</div>' +
+        '</div>' +
+        '<div style="text-align:right;min-width:67px">' +
+          '<div id="apk-build-indicator-timer" style="font:900 20px/1.05 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em">00:00</div>' +
+          '<div style="margin-top:3px;color:#94a3b8;font-size:9px;text-transform:uppercase;letter-spacing:.08em">Elapsed</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;margin-bottom:6px">' +
+        '<span id="apk-build-indicator-stage" style="color:#cbd5e1;font-size:10px;font-weight:700">Stage 1 / 4</span>' +
+        '<span id="apk-build-indicator-percent" style="color:#e2e8f0;font-size:10px;font-weight:800">0%</span>' +
+      '</div>' +
+      '<div style="height:6px;border-radius:999px;background:#1e293b;overflow:hidden;border:1px solid rgba(148,163,184,.08)">' +
+        '<div id="apk-build-indicator-bar" style="height:100%;width:3%;border-radius:999px;background:linear-gradient(90deg,#6366f1,#14b8a6);transition:width .45s ease"></div>' +
+      '</div>' +
+      '<div id="apk-build-indicator-hint" style="margin-top:7px;color:#64748b;font-size:9px">The counter confirms that the build process is active even while GitHub is compiling.</div>';
+
     document.body.appendChild(box);
+
     var started = Date.now();
     var timer = window.setInterval(function () {
       var seconds = Math.floor((Date.now() - started) / 1000);
@@ -320,24 +346,48 @@
       var el = document.getElementById('apk-build-indicator-timer');
       if (el) el.textContent = min + ':' + sec;
     }, 1000);
+
     return {
-      set: function(titleText, stepText, progress) {
+      set: function(titleText, stepText, progress, stageText) {
         var titleEl = document.getElementById('apk-build-indicator-title');
         var stepEl = document.getElementById('apk-build-indicator-step');
         var barEl = document.getElementById('apk-build-indicator-bar');
+        var percentEl = document.getElementById('apk-build-indicator-percent');
+        var stageEl = document.getElementById('apk-build-indicator-stage');
         if (titleEl) titleEl.textContent = titleText;
         if (stepEl) stepEl.textContent = stepText;
-        if (barEl) barEl.style.width = Math.max(4, Math.min(100, progress)) + '%';
+        if (barEl) barEl.style.width = Math.max(3, Math.min(100, progress)) + '%';
+        if (percentEl) percentEl.textContent = Math.round(Math.max(0, Math.min(100, progress))) + '%';
+        if (stageEl && stageText) stageEl.textContent = stageText;
+      },
+      pulse: function() {
+        var iconWrap = document.getElementById('apk-build-indicator-icon-wrap');
+        if (!iconWrap) return;
+        iconWrap.animate(
+          [{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }],
+          { duration: 700, easing: 'ease-out' }
+        );
       },
       finish: function(success, message) {
         window.clearInterval(timer);
         var iconEl = document.getElementById('apk-build-indicator-icon');
-        var barEl = document.getElementById('apk-build-indicator-bar');
         var stepEl = document.getElementById('apk-build-indicator-step');
+        var titleEl = document.getElementById('apk-build-indicator-title');
+        var hintEl = document.getElementById('apk-build-indicator-hint');
+        var barEl = document.getElementById('apk-build-indicator-bar');
+        var percentEl = document.getElementById('apk-build-indicator-percent');
+        var stageEl = document.getElementById('apk-build-indicator-stage');
         if (iconEl) iconEl.textContent = success ? '✓' : '⚠';
-        if (barEl) barEl.style.width = success ? '100%' : '100%';
+        if (titleEl) titleEl.textContent = success ? 'APK Ready' : 'Build interrupted';
         if (stepEl) stepEl.textContent = message;
-        window.setTimeout(function () { var el = document.getElementById('apk-build-indicator'); if (el) el.remove(); }, success ? 3500 : 6000);
+        if (hintEl) hintEl.textContent = success ? 'The signed APK is ready. Your download has been started.' : 'Check the message above or GitHub Actions for the exact reason.';
+        if (barEl) barEl.style.width = '100%';
+        if (percentEl) percentEl.textContent = success ? '100%' : '—';
+        if (stageEl) stageEl.textContent = success ? 'Completed' : 'Stopped';
+        window.setTimeout(function () {
+          var el = document.getElementById('apk-build-indicator');
+          if (el) el.remove();
+        }, success ? 3500 : 7000);
       }
     };
   }
@@ -369,6 +419,9 @@
     window.__web2appApkBuildRunning = true;
     setApkBuildButtonsBusy(true);
 
+    indicator.set('Starting APK build', 'Sending a secure request to GitHub Actions...', 4, 'Stage 1 / 4');
+    indicator.pulse();
+
     try {
       var dispatchResponse = await fetch(dispatchUrl, {
         method: 'POST',
@@ -381,7 +434,8 @@
         throw new Error('GitHub dispatch failed (' + dispatchResponse.status + '): ' + dispatchText.slice(0, 180));
       }
 
-      indicator.set('Build started', 'GitHub Actions accepted the build request.', 10);
+      indicator.set('Build started', 'GitHub Actions accepted the build request.', 10, 'Stage 1 / 4');
+      indicator.pulse();
       showToast('Build started on GitHub Actions. Waiting for the signed APK...', 'info');
 
       var run = null;
@@ -402,11 +456,15 @@
           run = candidates[0];
           break;
         }
+
+        var discoveryProgress = 10 + Math.min(10, Math.floor((attempt + 1) * 10 / 60));
+        indicator.set('Starting APK build', 'Waiting for GitHub to create the workflow run...', discoveryProgress, 'Stage 2 / 4');
       }
 
       if (!run) throw new Error('GitHub Actions run was not found. Please open Actions and check the workflow manually.');
 
-      indicator.set('Building APK', 'GitHub Actions run #' + run.run_number + ' is compiling the Android project.', 20);
+      indicator.set('Building APK', 'GitHub Actions run #' + run.run_number + ' is compiling the Android project.', 20, 'Stage 2 / 4');
+      indicator.pulse();
       showToast('GitHub build is running: #' + run.run_number, 'info');
 
       for (var poll = 0; poll < 120; poll++) {
@@ -417,7 +475,15 @@
 
         var status = await statusResponse.json();
         var elapsedProgress = 20 + Math.min(65, Math.floor((Date.now() - startedAt) / 10000));
-        indicator.set('Building APK', status.status === 'queued' ? 'Waiting for a GitHub runner...' : 'Gradle is compiling and signing the release build.', elapsedProgress);
+        var stageText = status.status === 'queued' ? 'Stage 2 / 4' : 'Stage 3 / 4';
+        indicator.set(
+          'Building APK',
+          status.status === 'queued' ? 'Waiting for a GitHub runner...' : 'Gradle is compiling and signing the release build.',
+          elapsedProgress,
+          stageText
+        );
+        if (poll % 2 === 0) indicator.pulse();
+
         if (status.status === 'completed') {
           if (status.conclusion !== 'success') {
             throw new Error('GitHub build finished with status: ' + status.conclusion + '. Open Actions for the detailed log.');
@@ -431,7 +497,8 @@
         throw new Error('Build timed out while waiting for GitHub Actions.');
       }
 
-      indicator.set('APK signed', 'Build completed successfully. Preparing the download...', 92);
+      indicator.set('APK signed', 'Build completed successfully. Preparing the download...', 92, 'Stage 4 / 4');
+      indicator.pulse();
       showToast('APK compiled and signed. Preparing download...', 'success');
 
       var tag = 'v' + c.version;
