@@ -132,11 +132,13 @@ jobs:
               permission_block += '    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n'
           if location:
               permission_block += '    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n'
-          m = re.sub(r'\s*<uses-permission\b[^>]*/>\s*', '\n', m)
-          application_pos = m.find("    <application")
+          m = re.sub(r'(?m)^[ \\t]*<uses-permission\\b[^>]*/>[ \\t]*(?:\\r?\\n|$)', '', m)
+          application_pos = m.find("<application")
           if application_pos == -1:
               raise SystemExit("AndroidManifest.xml is missing <application>")
-          m = m[:application_pos] + permission_block + m[application_pos:]
+          line_start = m.rfind("\\n", 0, application_pos) + 1
+          indent = m[line_start:application_pos]
+          m = m[:line_start] + permission_block + indent + m[application_pos:]
           manifest.write_text(m)
 
           print(f"Configured {name} | {package} | {version} | {url}")
