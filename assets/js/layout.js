@@ -46,7 +46,7 @@
             </span>
           </a>
           <nav class="hidden lg:flex items-center gap-1 bg-gray-900/80 p-1 rounded-xl border border-gray-800 text-xs font-bold" aria-label="Primary navigation">
-            ${nav.map(([href,icon,label]) => `<a href="${root}${href}" class="px-3 py-2 rounded-lg transition-all ${isActive(href) ? 'text-white bg-brand-600 shadow-md' : 'text-gray-400 hover:text-white hover:bg-gray-800/60'}"><i class="fa-solid ${icon} mr-1.5" aria-hidden="true"></i>${label}</a>`).join('')}
+            ${nav.map(([href,icon,label]) => `<a href="${root}${href}" class="px-3 py-2 rounded-lg transition-all ${isActive(href) ? 'text-white bg-brand-600 shadow-md' : 'text-gray-400'}" ${isActive(href) ? 'aria-current="page"' : ''}><i class="fa-solid ${icon} mr-1.5" aria-hidden="true"></i>${label}</a>`).join('')}
           </nav>
           <div class="flex items-center gap-2">
             <button type="button" class="theme-toggle inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-700 bg-gray-900/80 text-gray-200" data-theme-toggle aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>\n            <a href="${root}index.html" class="hidden sm:inline-flex px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition">
