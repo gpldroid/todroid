@@ -3,10 +3,10 @@ plugins {
 }
 
 def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
-def keystorePassword = System.getenv("KEYSTORE_PASSWORD")
-def keyAlias = System.getenv("KEY_ALIAS")
-def keyPassword = System.getenv("KEY_PASSWORD")
-def signingReady = keystorePath && keystorePassword && keyAlias && keyPassword
+def releaseStorePassword = System.getenv("KEYSTORE_PASSWORD")
+def releaseKeyAlias = System.getenv("KEY_ALIAS")
+def releaseKeyPassword = System.getenv("KEY_PASSWORD")
+def signingReady = keystorePath && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
 
 android {
     namespace "com.web2app.ci"
@@ -24,9 +24,9 @@ android {
         release {
             if (signingReady) {
                 storeFile file(keystorePath)
-                storePassword keystorePassword
-                keyAlias keyAlias
-                keyPassword keyPassword
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
             }
         }
     }
