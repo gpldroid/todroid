@@ -31,7 +31,7 @@
   const header = document.querySelector('[data-shared-header]');
   if (header) {
     header.innerHTML = `
-      <header class="site-header sticky top-0 z-40 border-b border-gray-800/80 glass-panel">
+      <header class="site-header glass-panel">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 flex items-center justify-between gap-4">
           <a href="${root}index.html" class="flex items-center gap-3 shrink-0" aria-label="Web2App Studio Pro home">
             <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
@@ -45,19 +45,19 @@
               <span class="block text-[10px] text-gray-400">Website to Native Android APK Compiler</span>
             </span>
           </a>
-          <nav class="hidden lg:flex items-center gap-1 bg-gray-900/80 p-1 rounded-xl border border-gray-800 text-xs font-bold" aria-label="Primary navigation">
+          <nav class="primary-navigation hidden lg:flex items-center gap-1 text-xs font-bold" aria-label="Primary navigation">
             ${nav.map(([href,icon,label]) => `<a href="${root}${href}" class="px-3 py-2 rounded-lg transition-all ${isActive(href) ? 'text-white bg-brand-600 shadow-md' : 'text-gray-400'}" ${isActive(href) ? 'aria-current="page"' : ''}><i class="fa-solid ${icon} mr-1.5" aria-hidden="true"></i>${label}</a>`).join('')}
           </nav>
           <div class="flex items-center gap-2">
-            <button type="button" class="theme-toggle inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-700 bg-gray-900/80 text-gray-200" data-theme-toggle aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>\n            <a href="${root}index.html" class="hidden sm:inline-flex px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition">
+            <button type="button" class="theme-toggle inline-flex items-center justify-center w-10 h-10 rounded-xl" data-theme-toggle aria-label="Switch to light mode" title="Switch to light mode"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>\n            <a href="${root}index.html" class="hidden sm:inline-flex px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition">
               <i class="fa-solid fa-bolt mr-1.5" aria-hidden="true"></i> Quick Build
             </a>
-            <button type="button" class="mobile-menu-button lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border border-gray-700 bg-gray-900/80 text-gray-200" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+            <button type="button" class="mobile-menu-button lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
               <i class="fa-solid fa-bars" aria-hidden="true"></i>
             </button>
           </div>
         </div>
-        <div id="mobile-menu" class="mobile-menu hidden lg:hidden border-t border-gray-800 bg-[#0d111b]/98 backdrop-blur-xl">
+        <div id="mobile-menu" class="mobile-menu hidden lg:hidden">
           <nav class="max-w-7xl mx-auto px-4 py-4 grid gap-1" aria-label="Mobile navigation">
             ${nav.map(([href,icon,label]) => `<a href="${root}${href}" class="mobile-nav-link ${isActive(href) ? 'active' : ''}"><i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span></a>`).join('')}
             <a href="${root}index.html" class="mobile-nav-link"><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>Quick Build APK</span></a>
@@ -69,19 +69,19 @@
   const footer = document.querySelector('[data-shared-footer]');
   if (footer) {
     footer.innerHTML = `
-      <footer class="site-footer border-t border-gray-800 mt-auto">
+      <footer class="site-footer">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
-              <div class="font-extrabold text-white">Web2App Studio Pro</div>
-              <p class="mt-2 text-xs text-gray-500 max-w-sm">A browser-based toolkit for configuring website-to-Android app projects.</p>
+              <div class="footer-brand font-extrabold">Web2App Studio Pro</div>
+              <p class="mt-2 text-xs footer-muted max-w-sm">A browser-based toolkit for configuring website-to-Android app projects.</p>
             </div>
-            <div><h2 class="text-xs font-bold uppercase tracking-wider text-gray-400">Navigation</h2><div class="mt-3 grid gap-2 text-xs">${nav.map(([href,,label])=>`<a href="${root}${href}" class="text-gray-500 hover:text-white transition">${label}</a>`).join('')}</div></div>
+            <div><h2 class="text-xs font-bold uppercase tracking-wider footer-heading">Navigation</h2><div class="mt-3 grid gap-2 text-xs">${nav.map(([href,,label])=>`<a href="${root}${href}" class="footer-link">${label}</a>`).join('')}</div></div>
             <div><h2 class="text-xs font-bold uppercase tracking-wider text-gray-400">Legal</h2><div class="mt-3 grid gap-2 text-xs">${legal.map(([href,label])=>`<a href="${root}${href}" class="text-gray-500 hover:text-white transition">${label}</a>`).join('')}</div></div>
           </div>
-          <div class="mt-8 pt-6 border-t border-gray-800 flex flex-wrap items-center justify-between gap-3 text-[11px] text-gray-600">
+          <div class="footer-bottom">
             <span>© <span data-current-year></span> Web2App Studio Pro. All rights reserved.</span>
-            <span class="flex gap-3"><a href="${root}pages/legal/privacy.html" class="hover:text-gray-400">Privacy</a><a href="${root}pages/legal/terms.html" class="hover:text-gray-400">Terms</a><a href="${root}pages/legal/cookies.html" class="hover:text-gray-400">Cookies</a></span>
+            <span class="footer-links flex gap-3"><a href="${root}pages/legal/privacy.html" class="footer-link">Privacy</a><a href="${root}pages/legal/terms.html" class="footer-link">Terms</a><a href="${root}pages/legal/cookies.html" class="footer-link">Cookies</a></span>
           </div>
         </div>
       </footer>`;
