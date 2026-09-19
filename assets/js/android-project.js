@@ -105,21 +105,6 @@ ${permissions.join('\\n')}
   }
 
   function mainActivity(c) {
-    const permissionBlock = c.location ? `
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                 checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        }` : '';
-
-    const cameraPermissions = c.camera ? `
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            java.util.ArrayList<String> permissions = new java.util.ArrayList<>();
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) permissions.add(Manifest.permission.CAMERA);
-            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) permissions.add(Manifest.permission.RECORD_AUDIO);
-            if (!permissions.isEmpty()) requestPermissions(permissions.toArray(new String[0]), REQUEST_MEDIA);
-        }` : '';
-
     return `package ${c.pkg};
 
 import android.Manifest;
@@ -165,8 +150,6 @@ public class MainActivity extends AppCompatActivity {
         configureWebView();
         if (savedInstanceState == null) webView.loadUrl("${escJava(c.url)}");
         else webView.restoreState(savedInstanceState);
-        ${permissionBlock}
-        ${cameraPermissions}
     }
 
     private void configureWebView() {
