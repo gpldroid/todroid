@@ -135,7 +135,8 @@ jobs:
           lines = m.splitlines(True)
           filtered = []
           for line in lines:
-              if re.match(r'^[ \t]*<uses-permission\b[^>]*/>[ \t]*(?:\r?\n)?
+              if re.match(r'^[ \t]*<uses-permission\b[^>]*/>[ \t]*(?:\r?\n)?$', line):
+                  continue
               filtered.append(line)
           m = ''.join(filtered)
           application_pos = m.find("<application")
