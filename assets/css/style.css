@@ -1409,3 +1409,15 @@ main .ui-btn-ghost:hover {
 @media (max-width: 767px) {
   .apk-build-indicator { width: min(94vw, 420px); padding: .85rem; }
 }
+
+/* Form field labels and validation */
+.field-label-row { display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.35rem; }
+.field-label { display:inline-flex; align-items:center; gap:.25rem; color:var(--app-text-2); font-size:.72rem; font-weight:800; line-height:1.3; }
+.field-label-required { color:var(--app-danger); }
+.field-action { border:0; padding:.2rem .45rem; border-radius:.45rem; color:var(--app-brand); background:color-mix(in srgb,var(--app-brand) 8%,transparent); font-size:.62rem; font-weight:800; cursor:pointer; }
+.field-action:hover { background:color-mix(in srgb,var(--app-brand) 14%,transparent); }
+.field-input[aria-invalid="true"] { border-color:var(--app-danger) !important; box-shadow:0 0 0 2px color-mix(in srgb,var(--app-danger) 12%,transparent); }
+.field-input[aria-invalid="false"] { border-color:color-mix(in srgb,var(--app-success) 55%,var(--app-border)) !important; }
+.field-status { min-height:1rem; margin-top:.3rem; color:var(--app-muted); font-size:.6rem; line-height:1.4; }
+.field-status.is-valid { color:var(--app-success); }
+.field-status.is-invalid { color:var(--app-danger); }
