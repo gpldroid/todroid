@@ -38,3 +38,36 @@ body {
 .cookie-btn.link{color:#a5b4fc;border:1px solid #374151}.cookie-btn.link:hover{color:#fff;background:#111827}
 @keyframes cookie-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.cookie-consent{animation:none}}
+
+
+/* ===== Performance / CLS safeguards ===== */
+[data-shared-header] {
+    min-height: 64px;
+}
+@media (max-width: 640px) {
+    [data-shared-header] {
+        min-height: 60px;
+    }
+}
+
+/* Keep injected shared chrome from causing horizontal overflow or reflow surprises. */
+[data-shared-header],
+[data-shared-footer] {
+    width: 100%;
+}
+
+/* Reduce visual reflow while fonts and third-party UI initialize. */
+html {
+    text-rendering: optimizeLegibility;
+}
+img, svg {
+    max-width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
