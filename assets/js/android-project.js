@@ -279,8 +279,141 @@
   window.startBuildProcess = build;
   window.web2AppProjectExport = writeProject;
   window.triggerSourceZipDownload = writeProject;
+  function githubApiHeaders(token) {
+    return {
+      'Accept': 'application/vnd.github+json',
+      'Authorization': 'Bearer ' + token.trim(),
+      'X-GitHub-Api-Version': '2026-03-10',
+      'Content-Type': 'application/json'
+    };
+  }
+
+  function githubBuildConfig() {
+    var c = config();
+    return {
+      app_name: c.name,
+      app_url: c.url,
+      package_name: c.pkg,
+      version_name: c.version,
+      primary_color: c.color,
+      camera: String(c.camera),
+      location: String(c.location),
+      publish_release: 'true'
+    };
+  }
+
+  async function triggerGitHubBuildInternal() {
+    var token = window.prompt('GitHub Fine-grained PAT (Actions: Read and write). It is used only for this request and is never saved.');
+    if (!token) return false;
+
+    var c = config();
+    if (!/^https:\/\//i.test(c.url)) {
+      showToast('Use an HTTPS target URL before starting the GitHub build.', 'error');
+      return false;
+    }
+
+    var headers = githubApiHeaders(token);
+    var dispatchUrl = 'https://api.github.com/repos/gpldroid/todroid/actions/workflows/android-build.yml/dispatches';
+    var startedAt = Date.now();
+
+    try {
+      var dispatchResponse = await fetch(dispatchUrl, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ ref: 'main', inputs: githubBuildConfig() })
+      });
+
+      if (!dispatchResponse.ok) {
+        var dispatchText = await dispatchResponse.text();
+        throw new Error('GitHub dispatch failed (' + dispatchResponse.status + '): ' + dispatchText.slice(0, 180));
+      }
+
+      showToast('Build started on GitHub Actions. Waiting for the signed APK...', 'info');
+
+      var run = null;
+      for (var attempt = 0; attempt < 60; attempt++) {
+        await new Promise(function (resolve) { setTimeout(resolve, attempt === 0 ? 2500 : 5000); });
+
+        var runsResponse = await fetch(
+          'https://api.github.com/repos/gpldroid/todroid/actions/workflows/android-build.yml/runs?branch=main&event=workflow_dispatch&per_page=10',
+          { headers: headers, cache: 'no-store' }
+        );
+        if (!runsResponse.ok) throw new Error('Cannot read GitHub Actions status (' + runsResponse.status + ').');
+
+        var runsData = await runsResponse.json();
+        var candidates = (runsData.workflow_runs || []).filter(function (item) {
+          return new Date(item.created_at).getTime() >= startedAt - 15000;
+        });
+        if (candidates.length) {
+          run = candidates[0];
+          break;
+        }
+      }
+
+      if (!run) throw new Error('GitHub Actions run was not found. Please open Actions and check the workflow manually.');
+
+      showToast('GitHub build is running: #' + run.run_number, 'info');
+
+      for (var poll = 0; poll < 120; poll++) {
+        await new Promise(function (resolve) { setTimeout(resolve, 5000); });
+
+        var statusResponse = await fetch(run.url, { headers: headers, cache: 'no-store' });
+        if (!statusResponse.ok) throw new Error('Cannot read build status (' + statusResponse.status + ').');
+
+        var status = await statusResponse.json();
+        if (status.status === 'completed') {
+          if (status.conclusion !== 'success') {
+            throw new Error('GitHub build finished with status: ' + status.conclusion + '. Open Actions for the detailed log.');
+          }
+          run = status;
+          break;
+        }
+      }
+
+      if (!run || run.status !== 'completed' || run.conclusion !== 'success') {
+        throw new Error('Build timed out while waiting for GitHub Actions.');
+      }
+
+      showToast('APK compiled and signed. Preparing download...', 'success');
+
+      var tag = 'v' + c.version;
+      var releaseResponse = await fetch(
+        'https://api.github.com/repos/gpldroid/todroid/releases/tags/' + encodeURIComponent(tag),
+        { headers: { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2026-03-10' }, cache: 'no-store' }
+      );
+      if (!releaseResponse.ok) {
+        throw new Error('Build succeeded, but GitHub Release ' + tag + ' was not found yet. Wait a few seconds and try again.');
+      }
+
+      var release = await releaseResponse.json();
+      var apk = (release.assets || []).find(function (asset) {
+        return /\.apk$/i.test(asset.name);
+      });
+      if (!apk || !apk.browser_download_url) {
+        throw new Error('The signed APK was built, but no APK release asset was found.');
+      }
+
+      var link = document.createElement('a');
+      link.href = apk.browser_download_url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.download = apk.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      showToast('APK download started: ' + apk.name, 'success');
+      return true;
+    } catch (error) {
+      console.error('GitHub APK build error:', error);
+      showToast(error && error.message ? error.message : 'Unable to build/download the APK.', 'error');
+      return false;
+    }
+  }
+
+  window.triggerGitHubBuild = triggerGitHubBuildInternal;
+
   window.triggerDirectApkDownload = function () {
-    showToast('A real APK cannot be fabricated in the browser. Export the Android Studio project and build the APK with Gradle.', 'info');
-    return writeProject();
+    return triggerGitHubBuildInternal();
   };
 })();
