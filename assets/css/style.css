@@ -1026,6 +1026,31 @@ main .bg-emerald-600\/20 {
   }
 }
 
+
+/* Normalize existing colored CTA buttons without changing compact utility/tab controls. */
+main button[class*="bg-brand-"],
+main button[class*="bg-emerald-"],
+main button[class*="bg-indigo-"],
+main button[class*="bg-amber-"],
+main button[class*="bg-rose-"],
+main a[class*="bg-brand-"],
+main a[class*="bg-emerald-"],
+main a[class*="bg-indigo-"] {
+  min-height: 42px;
+  border-radius: .8rem !important;
+  font-weight: 800;
+}
+main button[class*="bg-brand-"]:hover,
+main button[class*="bg-emerald-"]:hover,
+main button[class*="bg-indigo-"]:hover,
+main button[class*="bg-amber-"]:hover,
+main button[class*="bg-rose-"]:hover,
+main a[class*="bg-brand-"]:hover,
+main a[class*="bg-emerald-"]:hover,
+main a[class*="bg-indigo-"]:hover {
+  transform: translateY(-1px);
+}
+
 /* ===== Unified Hero / Card / Button System =====
    Shared visual primitives used across the builder and all content pages. */
 :root {
