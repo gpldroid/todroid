@@ -73,6 +73,7 @@ jobs:
           python3 - <<'PY'
           import os, re
           from pathlib import Path
+          from xml.sax.saxutils import escape
 
           root = Path(".")
           name = os.environ["APP_NAME"].strip() or "My Web App"
@@ -98,7 +99,7 @@ jobs:
           if java.exists():
               content = java.read_text()
               content = re.sub(r"^package\s+[^;]+;", f"package {package};", content, count=1, flags=re.M)
-              content = content.replace('https://example.com', url)
+              content = content.replace("https://example.com", url)
               java_target = java_dir / "MainActivity.java"
               java_target.write_text(content)
               if java_target != java:
@@ -106,33 +107,36 @@ jobs:
 
           gradle = root / "app/build.gradle"
           g = gradle.read_text()
-          g = re.sub(r"namespace '[^']+'", f"namespace '{package}'", g)
-          g = re.sub(r"applicationId '[^']+'", f"applicationId '{package}'", g)
-          g = re.sub(r"versionName '[^']+'", f"versionName '{version}'", g)
+          g = re.sub(r'namespace\s+"[^"]+"', f'namespace "{package}"', g, count=1)
+          g = re.sub(r'applicationId\s+"[^"]+"', f'applicationId "{package}"', g, count=1)
+          g = re.sub(r'versionName\s+"[^"]+"', f'versionName "{version}"', g, count=1)
           gradle.write_text(g)
 
           strings = root / "app/src/main/res/values/strings.xml"
-          strings.write_text(f'''<resources>
-              <string name="app_name">{name.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")}</string>
-              <string name="target_url">{url}</string>
+          strings.write_text(f"""<resources>
+              <string name="app_name">{escape(name)}</string>
+              <string name="target_url">{escape(url)}</string>
           </resources>
-          ''')
+          """)
 
           colors = root / "app/src/main/res/values/colors.xml"
-          colors.write_text(f'''<resources>
+          colors.write_text(f"""<resources>
               <color name="primary">{color}</color>
           </resources>
-          ''')
+          """)
 
           manifest = root / "app/src/main/AndroidManifest.xml"
           m = manifest.read_text()
-          m = re.sub(r'android:label="@string/app_name"', 'android:label="@string/app_name"', m)
           permission_block = '    <uses-permission android:name="android.permission.INTERNET" />\n'
           if camera:
               permission_block += '    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n'
           if location:
               permission_block += '    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n'
-          m = re.sub(r'    <uses-permission[\s\S]*?</manifest>', permission_block + '</manifest>', m)
+          m = re.sub(r'\s*<uses-permission\b[^>]*/>\s*', '\n', m)
+          application_pos = m.find("    <application")
+          if application_pos == -1:
+              raise SystemExit("AndroidManifest.xml is missing <application>")
+          m = m[:application_pos] + permission_block + m[application_pos:]
           manifest.write_text(m)
 
           print(f"Configured {name} | {package} | {version} | {url}")
@@ -157,13 +161,60 @@ jobs:
       - name: Validate Android project
         run: gradle --no-daemon help
 
+      - name: Prepare release signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          test -n "$KEYSTORE_BASE64" || {
+            echo "::error::Missing KEYSTORE_BASE64 repository secret"
+            exit 1
+          }
+          mkdir -p signing
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > signing/release.keystore
+          test -s signing/release.keystore || {
+            echo "::error::Decoded keystore is empty"
+            exit 1
+          }
+
+      - name: Validate release signing secrets
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_PASSWORD" || { echo "::error::Missing KEYSTORE_PASSWORD repository secret"; exit 1; }
+          test -n "$KEY_ALIAS" || { echo "::error::Missing KEY_ALIAS repository secret"; exit 1; }
+          test -n "$KEY_PASSWORD" || { echo "::error::Missing KEY_PASSWORD repository secret"; exit 1; }
+
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
 
-      - name: Build release AAB
+      - name: Build signed release APK
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android-project/signing/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: gradle --no-daemon :app:assembleRelease
+
+      - name: Build signed release AAB
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/android-project/signing/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: gradle --no-daemon :app:bundleRelease
 
-      - name: Upload APK
+      - name: Verify signed release APK
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose app/build/outputs/apk/release/*.apk
+
+      - name: Verify signed release AAB
+        run: |
+          jarsigner -verify -verbose -certs app/build/outputs/bundle/release/*.aab > /tmp/aab-signature.txt
+          tail -n 20 /tmp/aab-signature.txt
+
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: web2app-${{ inputs.app_name }}-debug-apk
@@ -171,10 +222,22 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Upload AAB
+      - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: web2app-${{ inputs.app_name }}-release-aab
+          name: web2app-${{ inputs.app_name }}-signed-release-apk
+          path: android-project/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload signed release AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: web2app-${{ inputs.app_name }}-signed-release-aab
           path: android-project/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 7
+
+      - name: Cleanup signing material
+        if: always()
+        run: rm -f signing/release.keystore
