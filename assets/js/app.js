@@ -510,69 +510,13 @@
         }
 
         // ================= BUILD & COMPILER ENGINE =================
+        // The browser generates a valid Android Studio source project.
+        // APK/AAB binaries require a real Gradle build environment.
         function startBuildProcess() {
-            const modal = document.getElementById('build-modal');
-            const pBar = document.getElementById('build-progress-bar');
-            const percent = document.getElementById('build-percent');
-            const stepText = document.getElementById('build-step-text');
-            const terminal = document.getElementById('build-terminal');
-            const completeBox = document.getElementById('build-complete-box');
-            const icon = document.getElementById('build-icon');
-            const title = document.getElementById('build-title');
-            const closeBtn = document.getElementById('modal-close-btn');
-
-            if (!modal) return;
-
-            modal.classList.remove('hidden');
-            if (completeBox) completeBox.classList.add('hidden');
-            if (closeBtn) closeBtn.classList.add('hidden');
-            if (icon) icon.className = "fa-solid fa-gear fa-spin";
-            if (title) title.innerText = "Compiling Android APK Package...";
-            if (terminal) terminal.innerHTML = '<div class="text-gray-500">[SYSTEM] Starting Web2App Pro Compiler Engine v4.0...</div>';
-
-            const logs = [
-                { p: 15, text: "Validating SSL headers & target URL...", log: "[BUILD] Target URL verified: " + state.appUrl },
-                { p: 30, text: "Injecting AndroidManifest permissions...", log: "[MANIFEST] Package ID injected: " + getElVal('app-package', 'com.web2app.app') },
-                { p: 50, text: "Compiling Java WebView bridge & chrome client...", log: "[JAVA] Compiling MainActivity.java & CustomWebChromeClient" },
-                { p: 70, text: "Bundling launcher icons & splash drawables...", log: "[ASSETS] Exporting mipmap-xxxhdpi assets..." },
-                { p: 85, text: "Assembling APK release binary with Gradle...", log: "[GRADLE] Assembling app-release.apk package" },
-                { p: 100, text: "APK Package Compiled Successfully!", log: "[SUCCESS] APK Built & Signed successfully!" }
-            ];
-
-            let index = 0;
-            const interval = setInterval(() => {
-                if (index < logs.length) {
-                    const step = logs[index];
-                    if (pBar) pBar.style.width = step.p + '%';
-                    if (percent) percent.innerText = step.p + '%';
-                    if (stepText) stepText.innerText = step.text;
-                    
-                    if (terminal) {
-                        const line = document.createElement('div');
-                        line.innerText = step.log;
-                        if (step.p === 100) line.className = "text-emerald-400 font-bold";
-                        terminal.appendChild(line);
-                        terminal.scrollTop = terminal.scrollHeight;
-                    }
-
-                    index++;
-                } else {
-                    clearInterval(interval);
-                    
-                    if (icon) icon.className = "fa-solid fa-circle-check text-emerald-400";
-                    if (title) title.innerText = "Compilation Successful!";
-                    if (completeBox) completeBox.classList.remove('hidden');
-                    if (closeBtn) closeBtn.classList.remove('hidden');
-
-                    generateQRCodeForDownload();
-
-                    if (window.confetti) {
-                        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
-                    }
-
-                    saveCurrentAppToDashboard();
-                }
-            }, 500);
+            if (typeof window.startBuildProcess === 'function' && window.startBuildProcess !== startBuildProcess) {
+                return window.startBuildProcess();
+            }
+            showToast("Android project exporter is not available.", "error");
         }
 
         function closeBuildModal() {
@@ -594,54 +538,6 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
             }
-        }
-
-        // Trigger Direct APK File Download
-        function triggerDirectApkDownload() {
-            const fileName = `${state.appName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_v${getElVal('app-version', '1.0.0')}.apk`;
-            const content = `WEB2APP_NATIVE_ANDROID_APK_BINARY
-PACKAGE_ID=${getElVal('app-package', state.appPackage)}
-APP_NAME=${state.appName}
-TARGET_URL=${state.appUrl}
-VERSION=${getElVal('app-version', '1.0.0')}
-PRIMARY_COLOR=${state.primaryColor}
-BUILT_BY=Web2App Studio Pro Compiler Engine v4.0`;
-
-            const blob = new Blob([content], { type: "application/vnd.android.package-archive" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            showToast("APK File Download Started!", "success");
-        }
-
-        // Trigger Source Code ZIP Download
-        function triggerSourceZipDownload() {
-            if (typeof JSZip === 'undefined') return;
-
-            const zip = new JSZip();
-            const safeName = state.appName.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            zip.file("AndroidManifest.xml", getManifestCode());
-            zip.file("MainActivity.java", getJavaCode());
-            zip.file("build.gradle", getGradleCode());
-
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                const url = URL.createObjectURL(content);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${safeName}_android_studio_project.zip`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                showToast("Android Studio Source Code ZIP Downloaded!");
-            });
         }
 
         // ================= CODE GENERATION TEMPLATES =================
