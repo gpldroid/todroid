@@ -543,41 +543,22 @@
         // ================= CODE GENERATION TEMPLATES =================
         function getManifestCode() {
             const pkg = getElVal('app-package', state.appPackage);
-            return `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="${pkg}">
-
-    <!-- Permissions -->
+            const camera = getElChecked('feat-camera', true);
+            const location = getElChecked('feat-location', false);
+            return `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${pkg}">
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="${state.appName}"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
-        
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />${camera ? '\\n    <uses-permission android:name="android.permission.CAMERA" />\\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />' : ''}${location ? '\\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' : ''}
+    <application android:allowBackup="true" android:usesCleartextTraffic="false" android:icon="@drawable/ic_launcher" android:label="${state.appName}" android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity" android:exported="true" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
         </activity>
     </application>
-
 </manifest>`;
         }
 
         function getJavaCode() {
-            const safePkg = getElVal('app-package', state.appPackage);
-            return `package ${safePkg};
+            const pkg = getElVal('app-package', state.appPackage);
+            return `package ${pkg};
 
 import android.os.Bundle;
 import android.webkit.WebSettings;
@@ -587,30 +568,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         webView = new WebView(this);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
-        settings.setDatabaseEnabled(true);
-        
+        settings.setAllowFileAccess(false);
+        settings.setAllowContentAccess(true);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("${state.appUrl}");
-        
         setContentView(webView);
     }
-
-    @Override
-    public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+    @Override public void onBackPressed() {
+        if (webView.canGoBack()) webView.goBack(); else super.onBackPressed();
     }
 }`;
         }
@@ -618,32 +589,28 @@ public class MainActivity extends AppCompatActivity {
         function getGradleCode() {
             const pkg = getElVal('app-package', state.appPackage);
             const ver = getElVal('app-version', '1.0.0');
-            return `plugins {
-    id 'com.android.application'
-}
+            return `plugins { id 'com.android.application' }
 
 android {
-    compileSdk 34
-
+    namespace '${pkg}'
+    compileSdk 35
     defaultConfig {
-        applicationId "${pkg}"
+        applicationId '${pkg}'
         minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "${ver}"
+        targetSdk 35
+        versionCode 10000
+        versionName '${ver}'
     }
-
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources false
         }
     }
 }
-
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.webkit:webkit:1.12.1'
 }`;
         }
 
