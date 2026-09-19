@@ -572,27 +572,9 @@ main li {
 }
 
 /* ===== Performance / CLS safeguards ===== */
-[data-shared-header] {
-  contain: layout style;
-}
-
-[data-shared-footer] {
-  contain: layout style;
-}
-
 .site-header,
 .mobile-menu {
   contain: paint;
-}
-
-img[width][height] {
-  aspect-ratio: attr(width) / attr(height);
-}
-
-@supports not (aspect-ratio: attr(width) / attr(height)) {
-  img[width][height] {
-    height: auto;
-  }
 }
 
 /* ===== Accessibility ===== */
