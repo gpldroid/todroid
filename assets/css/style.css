@@ -1,0 +1,28 @@
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080a11;
+            color: #f3f4f6;
+        }
+        .glass-panel {
+            background: rgba(16, 21, 36, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(29, 38, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .phone-shadow {
+            box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.35), 0 0 50px 0 rgba(0, 0, 0, 0.9);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #080a11; }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
