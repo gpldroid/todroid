@@ -26,3 +26,15 @@ body {
         ::-webkit-scrollbar-track { background: #080a11; }
         ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+/* Shared static layout */
+.site-header{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.mobile-nav-link{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:.75rem;color:#9ca3af;font-size:.8rem;font-weight:700}
+.mobile-nav-link:hover,.mobile-nav-link.active{color:#fff;background:rgba(79,70,229,.18)}
+.cookie-consent{animation:cookie-in .22s ease-out}
+.cookie-btn{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:.5rem .75rem;border-radius:.65rem;font-size:.72rem;font-weight:700;transition:.18s}
+.cookie-btn.primary{background:#4f46e5;color:#fff}.cookie-btn.primary:hover{background:#6366f1}
+.cookie-btn.secondary{background:#1f2937;color:#f3f4f6;border:1px solid #374151}.cookie-btn.secondary:hover{background:#374151}
+.cookie-btn.link{color:#a5b4fc;border:1px solid #374151}.cookie-btn.link:hover{color:#fff;background:#111827}
+@keyframes cookie-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.cookie-consent{animation:none}}
