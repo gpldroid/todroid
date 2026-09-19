@@ -38,9 +38,14 @@ on:
         required: true
         default: true
         type: boolean
+      publish_release:
+        description: "Create a GitHub Release and tag for this version"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-build-${{ github.ref }}
@@ -291,3 +296,85 @@ jobs:
       - name: Cleanup signing material
         if: always()
         run: rm -f signing/release.keystore
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: ${{ inputs.publish_release }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download signed release APK
+        uses: actions/download-artifact@v5
+        with:
+          name: web2app-${{ inputs.app_name }}-signed-release-apk
+          path: release/apk
+
+      - name: Download signed release AAB
+        uses: actions/download-artifact@v5
+        with:
+          name: web2app-${{ inputs.app_name }}-signed-release-aab
+          path: release/aab
+
+      - name: Prepare release files
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          APP_URL: ${{ inputs.app_url }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION_NAME}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::error::GitHub Release $tag already exists. Choose a new version."
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags "https://github.com/${GITHUB_REPOSITORY}.git" "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "::error::Git tag $tag already exists. Choose a new version."
+            exit 1
+          fi
+          apk="$(find release/apk -type f -name "*.apk" | head -n 1)"
+          aab="$(find release/aab -type f -name "*.aab" | head -n 1)"
+          sums="$(find release/apk -type f -name "SHA256SUMS.txt" | head -n 1)"
+          info="$(find release/apk -type f -name "build-info.json" | head -n 1)"
+          test -n "$apk" && test -f "$apk" || { echo "::error::Signed release APK not found"; exit 1; }
+          test -n "$aab" && test -f "$aab" || { echo "::error::Signed release AAB not found"; exit 1; }
+          test -n "$sums" && test -f "$sums" || { echo "::error::SHA256SUMS.txt not found"; exit 1; }
+          test -n "$info" && test -f "$info" || { echo "::error::build-info.json not found"; exit 1; }
+          mkdir -p release/final
+          safe_name="$(printf "%s" "$APP_NAME" | tr " /" "--")"
+          cp "$apk" "release/final/${safe_name}-${VERSION_NAME}-release.apk"
+          cp "$aab" "release/final/${safe_name}-${VERSION_NAME}-release.aab"
+          cp "$sums" release/final/SHA256SUMS.txt
+          cp "$info" release/final/build-info.json
+          python3 - <<PY
+import json
+from pathlib import Path
+p=Path("release/final/build-info.json")
+info=json.loads(p.read_text())
+info["releaseTag"]="v" + "${VERSION_NAME}"
+info["githubRepository"]="${GITHUB_REPOSITORY}"
+p.write_text(json.dumps(info, indent=2) + "\\n")
+PY
+          cat > release/final/RELEASE-NOTES.md <<EOF
+# ${APP_NAME} ${VERSION_NAME}
+
+Official Web2App Studio release.
+
+- Package: `${PACKAGE_NAME}`
+- Version: `${VERSION_NAME}`
+- Target: `${APP_URL}`
+- Signed APK and AAB verified by CI
+- SHA-256 checksums included in `SHA256SUMS.txt`
+EOF
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP_NAME: ${{ inputs.app_name }}
+          VERSION_NAME: ${{ inputs.version_name }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION_NAME}"
+          gh release create "$tag" release/final/* --target "${GITHUB_SHA}" --title "${APP_NAME} ${VERSION_NAME}" --notes-file release/final/RELEASE-NOTES.md
+
