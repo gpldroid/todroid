@@ -1025,3 +1025,312 @@ main .bg-emerald-600\/20 {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ===== Unified Hero / Card / Button System =====
+   Shared visual primitives used across the builder and all content pages. */
+:root {
+  --component-radius: 1.25rem;
+  --component-radius-lg: 1.5rem;
+  --component-control-h: 44px;
+  --component-control-h-sm: 40px;
+  --component-gap: 1rem;
+  --hero-max: 76rem;
+}
+
+.page-hero,
+.hero-section {
+  position: relative;
+  width: 100%;
+  max-width: var(--hero-max);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--app-border);
+  border-radius: var(--component-radius-lg);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(99,102,241,.10), transparent 22rem),
+    radial-gradient(circle at 8% 92%, rgba(16,185,129,.07), transparent 20rem),
+    color-mix(in srgb, var(--app-surface) 94%, transparent);
+  box-shadow: var(--panel-shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.page-hero::before,
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(99,102,241,.08), transparent 42%, rgba(16,185,129,.05));
+  z-index: -1;
+}
+
+.page-hero > *,
+.hero-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-hero h1,
+.hero-section h1 {
+  max-width: 56rem;
+  margin-bottom: 0;
+  font-size: clamp(1.9rem, 4vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+
+.page-hero > p,
+.hero-section > p,
+.page-hero .hero-copy,
+.hero-section .hero-copy {
+  max-width: 46rem;
+}
+
+.page-hero .hero-actions,
+.hero-section .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  margin-top: 1.25rem;
+}
+
+.page-hero .hero-eyebrow,
+.hero-section .hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 28px;
+  padding: .3rem .65rem;
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 999px;
+  background: rgba(99,102,241,.08);
+  color: var(--app-brand-strong);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+html[data-theme="dark"] .page-hero,
+html[data-theme="dark"] .hero-section {
+  background:
+    radial-gradient(circle at 92% 8%, rgba(99,102,241,.15), transparent 22rem),
+    radial-gradient(circle at 8% 92%, rgba(16,185,129,.08), transparent 20rem),
+    color-mix(in srgb, var(--app-surface) 94%, transparent);
+}
+
+html[data-theme="dark"] .page-hero .hero-eyebrow,
+html[data-theme="dark"] .hero-section .hero-eyebrow {
+  color: #c7d2fe;
+  background: rgba(99,102,241,.14);
+  border-color: rgba(129,140,248,.25);
+}
+
+/* Card primitive */
+.ui-card,
+main .glass-card,
+main .glass-panel {
+  border-radius: var(--component-radius) !important;
+  border: 1px solid var(--app-border) !important;
+  box-shadow: var(--panel-shadow);
+}
+
+main .glass-panel {
+  background: color-mix(in srgb, var(--app-surface) 94%, transparent) !important;
+}
+
+main .glass-card {
+  background: color-mix(in srgb, var(--app-surface-2) 92%, transparent) !important;
+}
+
+.ui-card {
+  padding: 1.25rem;
+  background: var(--app-surface);
+  color: var(--app-text);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.ui-card:hover,
+main .glass-panel:hover,
+main .glass-card:hover {
+  border-color: rgba(99,102,241,.28) !important;
+  box-shadow: 0 16px 38px rgba(15,23,42,.09);
+}
+
+html[data-theme="dark"] .ui-card:hover,
+html[data-theme="dark"] main .glass-panel:hover,
+html[data-theme="dark"] main .glass-card:hover {
+  box-shadow: 0 18px 42px rgba(0,0,0,.25);
+}
+
+.card-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.card-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.card-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  border: 1px solid var(--app-border);
+  border-radius: .875rem;
+  background: var(--app-surface-2);
+  color: var(--app-brand);
+}
+
+.card-title {
+  color: var(--app-text) !important;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.card-description {
+  color: var(--app-muted) !important;
+  font-size: .8rem;
+  line-height: 1.7;
+}
+
+/* Button primitives */
+.ui-btn,
+main button:not(.unstyled),
+main a.ui-btn {
+  min-height: var(--component-control-h);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .8rem !important;
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ui-btn-sm {
+  min-height: var(--component-control-h-sm) !important;
+  padding: .55rem .8rem !important;
+  font-size: .72rem !important;
+  border-radius: .7rem !important;
+}
+
+.ui-btn-primary,
+main .ui-btn-primary {
+  color: #fff !important;
+  background: var(--app-brand) !important;
+  border-color: var(--app-brand-strong) !important;
+  box-shadow: 0 7px 18px rgba(79,70,229,.18);
+}
+
+.ui-btn-primary:hover,
+main .ui-btn-primary:hover {
+  background: var(--app-brand-strong) !important;
+  box-shadow: 0 10px 24px rgba(79,70,229,.24);
+}
+
+.ui-btn-secondary,
+main .ui-btn-secondary {
+  color: var(--app-text-2) !important;
+  background: var(--app-surface-2) !important;
+  border-color: var(--app-border-strong) !important;
+}
+
+.ui-btn-secondary:hover,
+main .ui-btn-secondary:hover {
+  color: var(--app-text) !important;
+  background: var(--app-surface) !important;
+  border-color: rgba(99,102,241,.35) !important;
+}
+
+.ui-btn-success,
+main .ui-btn-success {
+  color: #fff !important;
+  background: #059669 !important;
+  border-color: #047857 !important;
+  box-shadow: 0 7px 18px rgba(5,150,105,.18);
+}
+
+.ui-btn-ghost,
+main .ui-btn-ghost {
+  color: var(--app-brand-strong) !important;
+  background: transparent !important;
+  border-color: var(--app-border) !important;
+}
+
+.ui-btn-ghost:hover,
+main .ui-btn-ghost:hover {
+  background: rgba(99,102,241,.07) !important;
+  border-color: rgba(99,102,241,.28) !important;
+}
+
+.ui-btn:focus-visible,
+.ui-btn-primary:focus-visible,
+.ui-btn-secondary:focus-visible,
+.ui-btn-success:focus-visible,
+.ui-btn-ghost:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+.ui-btn:disabled,
+.ui-btn-primary:disabled,
+.ui-btn-secondary:disabled,
+.ui-btn-success:disabled {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 767px) {
+  .page-hero,
+  .hero-section {
+    padding: 1.25rem;
+    border-radius: var(--component-radius);
+  }
+
+  .page-hero h1,
+  .hero-section h1 {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+  }
+
+  .page-hero .hero-actions,
+  .hero-section .hero-actions {
+    align-items: stretch;
+  }
+
+  .page-hero .hero-actions .ui-btn,
+  .hero-section .hero-actions .ui-btn {
+    flex: 1 1 auto;
+  }
+
+  .card-grid-2,
+  .card-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .ui-btn,
+  main button:not(.unstyled),
+  main a.ui-btn {
+    min-height: 42px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-card:hover,
+  main .glass-panel:hover,
+  main .glass-card:hover {
+    transform: none !important;
+  }
+}
