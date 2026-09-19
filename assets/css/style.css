@@ -600,6 +600,78 @@ main li {
   }
 }
 
+
+
+/* ===== Reliability / layout hardening ===== */
+html,
+body {
+  width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  overflow-wrap: anywhere;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img[loading="lazy"] {
+  content-visibility: auto;
+}
+
+iframe,
+video {
+  max-width: 100%;
+}
+
+pre,
+code,
+textarea {
+  max-width: 100%;
+}
+
+pre {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.cookie-consent {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@supports not (background: color-mix(in srgb, white, black)) {
+  .glass-panel {
+    background: var(--app-surface) !important;
+  }
+  .glass-card {
+    background: var(--app-surface-2) !important;
+  }
+  .site-footer {
+    background: var(--app-surface) !important;
+  }
+}
+
 /* ===== Dark theme surface corrections ===== */
 html[data-theme="dark"] body {
   background:
