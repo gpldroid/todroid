@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
 <head>
+    <link rel="canonical" href="https://web2appstudio.com/">
+    <meta property="og:site_name" content="Web2App Studio Pro">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+    <meta name="twitter:site" content="@web2appstudio">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="title" content="Web2App Studio Pro - Convert Website to Android App (APK)">
-    <meta name="description" content="Transform any website URL into a fully functional, native Android APK in seconds. Custom app icons, splash screens, permissions, and source code export.">
-    <meta name="keywords" content="web to apk, convert website to android app, url to apk, webview app generator, android studio builder, make apk from url">
+    <meta name="description" content="Convert a website into an Android app project with WebView configuration, branding, permissions, live preview, and source export.">
+    <meta name="keywords" content="web to apk, website to android app, url to apk, webview app builder, android app generator">
     <meta name="author" content="Web2App Studio Team">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#4f46e5">
 
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://web2appstudio.com">
-    <meta property="og:title" content="Web2App Studio Pro - Instant Website to Android APK Converter">
-    <meta property="og:description" content="Turn any website link into a native Android APK app instantly with custom branding, splash screens, offline support, and complete Android Studio source code download.">
+    <meta property="og:url" content="https://web2appstudio.com/">
+    <meta property="og:title" content="Web2App Studio Pro | Website to Android APK Builder">
+    <meta property="og:description" content="Convert a website into an Android app project with WebView configuration, branding, permissions, live preview, and source export.">
     <meta property="og:image" content="https://placehold.co/1200x630/4f46e5/ffffff?text=Web2App+Studio+Pro">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://web2appstudio.com">
-    <meta name="twitter:title" content="Web2App Studio Pro - Instant Website to Android APK Converter">
-    <meta name="twitter:description" content="Convert websites into native Android APKs with live phone preview and instant download.">
+    <meta name="twitter:url" content="https://web2appstudio.com/">
+    <meta name="twitter:title" content="Web2App Studio Pro | Website to Android APK Builder">
+    <meta name="twitter:description" content="Convert a website into an Android app project with WebView configuration, branding, permissions, live preview, and source export.">
     <meta name="twitter:image" content="https://placehold.co/1200x630/4f46e5/ffffff?text=Web2App+Studio+Pro">
 
-    <title>Web2App Studio Pro - Convert Website to Android App (APK)</title>
+    <title>Web2App Studio Pro | Website to Android APK Builder</title>
 
     <!-- Tailwind CSS -->
     <script src="assets/js/tailwind.config.js"></script>
@@ -45,38 +50,7 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
 
-    <header class="sticky top-0 z-40 border-b border-gray-800/80 glass-panel">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
-            <!-- Brand Logo -->
-            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('builder')">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
-                    <i class="fa-solid fa-mobile-screen-button text-lg"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-xl tracking-tight text-white">Web2App</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30">STUDIO PRO v4.0</span>
-                    </div>
-                    <p class="text-[10px] text-gray-400">Website to Native Android APK Compiler</p>
-                </div>
-            </div>
-
-            <!-- Navigation Bar -->
-            <nav class="hidden md:flex items-center gap-1 bg-gray-900/80 p-1 rounded-xl border border-gray-800 text-xs font-bold">
-<a href="index.html" class="px-4 py-2 rounded-lg transition-all text-white bg-brand-600 shadow-md"><i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>Studio Builder</a>
-<a href="pages/apps/index.html" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50"><i class="fa-solid fa-cubes mr-1.5"></i>My Apps</a>
-<a href="pages/templates/index.html" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50"><i class="fa-solid fa-table-cells text-amber-400 mr-1.5"></i>Templates</a>
-<a href="pages/features/index.html" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50"><i class="fa-solid fa-layer-group mr-1.5"></i>Platform Features</a>
-<a href="pages/docs/index.html" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-all hover:bg-gray-800/50"><i class="fa-solid fa-book-open mr-1.5"></i>Docs & FAQ</a>
-</nav>
-
-            <!-- Quick Action -->
-            <button onclick="startBuildProcess()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
-                <i class="fa-solid fa-bolt"></i> Quick Build APK
-            </button>
-        </div>
-    </header>
+    <div data-shared-header></div>
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -481,94 +455,7 @@
     </main>
 
     <!-- ================= FOOTER ================= -->
-    <footer class="mt-20 border-t border-gray-800/80 glass-panel relative z-10 bg-darkbg/90">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-gray-800/60">
-                
-                <!-- Col 1: Brand Info & Bio -->
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('builder')">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
-                            <i class="fa-solid fa-mobile-screen-button text-lg"></i>
-                        </div>
-                        <div>
-                            <span class="font-extrabold text-xl tracking-tight text-white">Web2App <span class="text-brand-400">PRO</span></span>
-                            <p class="text-[10px] text-gray-400">Website to Native Android APK Compiler</p>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-400 leading-relaxed max-w-sm">
-                        Turn any website URL into a fully functional, high-performance Android application in seconds. Built for developers, creators, and business owners worldwide.
-                    </p>
-
-                    <!-- Social Media Links -->
-                    <div class="pt-2">
-                        <span class="text-[11px] font-bold text-gray-300 uppercase tracking-wider block mb-3">Connect With Us</span>
-                        <div class="flex items-center gap-2.5">
-                            <a href="https://github.com" target="_blank" rel="noopener noreferrer" title="GitHub" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-github"></i>
-                            </a>
-                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-x-twitter"></i>
-                            </a>
-                            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" title="Discord Community" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-brand-500 hover:bg-brand-600/20 text-gray-400 hover:text-white flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-discord"></i>
-                            </a>
-                            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" title="YouTube Channel" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-rose-500 hover:bg-rose-600/20 text-gray-400 hover:text-rose-400 flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-youtube"></i>
-                            </a>
-                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-sky-500 hover:bg-sky-600/20 text-gray-400 hover:text-sky-400 flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-linkedin-in"></i>
-                            </a>
-                            <a href="https://t.me" target="_blank" rel="noopener noreferrer" title="Telegram Channel" class="w-9 h-9 rounded-xl bg-gray-900 border border-gray-800 hover:border-sky-400 hover:bg-sky-500/20 text-gray-400 hover:text-sky-300 flex items-center justify-center text-sm transition-all duration-200">
-                                <i class="fa-brands fa-telegram"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Col 2: Navigation Links -->
-                <div class="space-y-3">
-                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Navigation</h4>
-                    <ul class="space-y-2 text-xs text-gray-400"><li><a href="index.html" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-[10px] text-brand-500"></i> Studio Builder</a></li><li><a href="pages/apps/index.html" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-cubes text-[10px] text-brand-500"></i> My Apps</a></li><li><a href="pages/templates/index.html" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-table-cells text-[10px] text-amber-400"></i> Templates</a></li><li><a href="pages/features/index.html" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-[10px] text-brand-500"></i> Platform Features</a></li><li><a href="pages/docs/index.html" class="hover:text-brand-300 transition flex items-center gap-1.5"><i class="fa-solid fa-book-open text-[10px] text-brand-500"></i> Docs & FAQ</a></li></ul>
-                </div>
-
-                <!-- Col 3: Legal Pages -->
-<div class="space-y-3">
-<h4 class="text-xs font-bold text-white uppercase tracking-wider">Legal Pages</h4>
-<ul class="space-y-2 text-xs text-gray-400">
-<li><a href="pages/legal/privacy.html" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[10px] text-emerald-500"></i> Privacy Policy</a></li>
-<li><a href="pages/legal/terms.html" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-file-contract text-[10px] text-emerald-500"></i> Terms of Service</a></li>
-<li><a href="pages/legal/cookies.html" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-cookie-bite text-[10px] text-amber-500"></i> Cookie Policy</a></li>
-<li><a href="pages/legal/disclaimer.html" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation text-[10px] text-amber-500"></i> Disclaimer</a></li>
-<li><a href="pages/legal/gdpr.html" class="hover:text-emerald-400 transition flex items-center gap-1.5"><i class="fa-solid fa-user-lock text-[10px] text-emerald-500"></i> GDPR Compliance</a></li>
-</ul>
-</div>
-
-<!-- Col 4: Engine Status -->
-                <div class="space-y-3">
-                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Compiler Status</h4>
-                    <div class="bg-gray-950 p-3.5 rounded-2xl border border-gray-800 space-y-2">
-                        <div class="flex items-center gap-2">
-                            <span class="relative flex h-2.5 w-2.5">
-                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                            </span>
-                            <span class="text-xs font-bold text-emerald-400">Engine v4.0 Active</span>
-                        </div>
-                        <p class="text-[11px] text-gray-400 leading-tight">Android SDK 34 Ready. Instant APK compile pipeline online.</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Footer Bottom Bar -->
-            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-                <p>&copy; 2026 <span class="text-white font-semibold">Web2App Studio Pro</span>. All rights reserved.</p>
-                <div class="flex items-center gap-4">
-<a href="pages/legal/privacy.html" class="hover:text-white transition">Privacy</a><span>&bull;</span>
-<a href="pages/legal/terms.html" class="hover:text-white transition">Terms</a><span>&bull;</span>
-<a href="pages/legal/cookies.html" class="hover:text-white transition">Cookies</a>
-</div></div></div></footer>
+    <div data-shared-footer></div>
 
     <!-- ================= MODAL: BUILD PROCESS & APK DOWNLOAD ================= -->
     <div id="build-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
@@ -722,6 +609,7 @@
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
 
     <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script src="assets/js/layout.js" defer></script>
     <script src="assets/js/app.js" defer></script>
 </body>
 </html>
