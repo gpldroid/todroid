@@ -2,6 +2,12 @@ plugins {
     id "com.android.application"
 }
 
+def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+def keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+def keyAlias = System.getenv("KEY_ALIAS")
+def keyPassword = System.getenv("KEY_PASSWORD")
+def signingReady = keystorePath && keystorePassword && keyAlias && keyPassword
+
 android {
     namespace "com.web2app.ci"
     compileSdk 35
@@ -14,10 +20,24 @@ android {
         versionName "1.0.0"
     }
 
+    signingConfigs {
+        release {
+            if (signingReady) {
+                storeFile file(keystorePath)
+                storePassword keystorePassword
+                keyAlias keyAlias
+                keyPassword keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
+            if (signingReady) {
+                signingConfig signingConfigs.release
+            }
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
