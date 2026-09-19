@@ -156,13 +156,15 @@
                             </div>
 
                             <div class="space-y-1.5">
-                                <div class="flex justify-between items-center">
-                                    <label class="block text-xs font-bold text-gray-300">
-                                        Android Package ID
+                                <div class="field-label-row">
+                                    <label for="app-package" class="field-label">
+                                        <span>Android Package ID</span>
+                                        <span class="field-label-required" aria-hidden="true">*</span>
                                     </label>
-                                    <button onclick="autoGeneratePackageId()" class="text-[10px] text-brand-400 hover:underline">Auto</button>
+                                    <button type="button" onclick="autoGeneratePackageId()" class="field-action">Generate ID</button>
                                 </div>
-                                <input type="text" id="app-package" value="com.web2app.wikipocket" placeholder="com.company.app" class="w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition font-mono">
+                                <input type="text" id="app-package" value="com.web2app.wikipocket" placeholder="com.company.app" autocomplete="off" spellcheck="false" oninput="validatePackageId()" class="field-input field-input-mono w-full bg-gray-950 border border-gray-800 focus:border-brand-500 text-white text-xs rounded-xl px-3.5 py-3 focus:outline-none transition font-mono" aria-describedby="app-package-status">
+                                <div id="app-package-status" class="field-status" role="status" aria-live="polite">Valid Android package format</div>
                             </div>
                         </div>
 
