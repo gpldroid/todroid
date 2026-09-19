@@ -144,7 +144,7 @@
       '                return true;',
       '            }',
       '            @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {',
-      '                if (request.isForMainFrame()) view.loadDataWithBaseURL(null, "<html><body style=" + "\\'font-family:sans-serif;padding:32px;text-align:center\\'" + "><h2>Connection problem</h2><p>Please check your connection and try again.</p></body></html>", "text/html", "UTF-8", null);',
+      '                if (request.isForMainFrame()) view.loadDataWithBaseURL(null, "<html><body style=" + "\'font-family:sans-serif;padding:32px;text-align:center\'" + "><h2>Connection problem</h2><p>Please check your connection and try again.</p></body></html>", "text/html", "UTF-8", null);',
       '            }',
       '        });',
       '        webView.setWebChromeClient(new WebChromeClient() {',
