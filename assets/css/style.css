@@ -1202,7 +1202,6 @@ html[data-theme="dark"] main .glass-card:hover {
 
 /* Button primitives */
 .ui-btn,
-main button:not(.unstyled),
 main a.ui-btn {
   min-height: var(--component-control-h);
   display: inline-flex;
@@ -1321,7 +1320,6 @@ main .ui-btn-ghost:hover {
   }
 
   .ui-btn,
-  main button:not(.unstyled),
   main a.ui-btn {
     min-height: 42px;
   }
