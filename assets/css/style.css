@@ -73,7 +73,7 @@ img, svg {
 }
 
 /* ===== Light / Dark theme system ===== */
-:root{color-scheme:dark;--app-bg:#080a11;--app-text:#f3f4f6}
+ :root{color-scheme:light;--app-bg:#f6f8fc;--app-text:#111827}
 html[data-theme="light"]{color-scheme:light;--app-bg:#f6f8fc;--app-text:#111827}
 html[data-theme="light"] body{background-color:var(--app-bg)!important;color:var(--app-text)!important}
 html[data-theme="light"] .glass-panel{background:rgba(255,255,255,.88)!important;border-color:rgba(15,23,42,.10)!important;color:#111827}
