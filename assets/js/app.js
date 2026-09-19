@@ -190,6 +190,24 @@
             updateSimulator();
             setInterval(updateSimClock, 1000);
             updateSimClock();
+
+            // Load a template selected from the dedicated Templates page.
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const templateId = params.get('template');
+                const pending = localStorage.getItem('web2app-pending-template');
+                const tpl = templateId
+                    ? appTemplates.find(t => t.id === templateId)
+                    : (pending ? appTemplates.find(t => t.id === JSON.parse(pending).id) : null);
+
+                if (tpl) {
+                    applyTemplate(tpl.id);
+                    localStorage.removeItem('web2app-pending-template');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch (e) {
+                // Ignore malformed URL/localStorage data and keep the builder usable.
+            }
         });
 
         // Navigation Tab Switcher
