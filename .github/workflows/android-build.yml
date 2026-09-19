@@ -171,9 +171,20 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          set -euo pipefail
           test -n "$KEYSTORE_BASE64" || { echo "::error::Missing KEYSTORE_BASE64 repository secret"; exit 1; }
           mkdir -p signing
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > signing/release.keystore
+
+          # Normalize copied Base64 (Termux/GitHub secrets may contain line breaks or CRLF).
+          normalized_base64="$(printf '%s' "$KEYSTORE_BASE64" | tr -d '[:space:]')"
+          test -n "$normalized_base64" || { echo "::error::KEYSTORE_BASE64 contains no decodable data"; exit 1; }
+
+          if ! printf '%s' "$normalized_base64" | base64 --decode > signing/release.keystore 2>/tmp/base64-error.log; then
+            echo "::error::KEYSTORE_BASE64 is not valid Base64. Recreate the secret from the keystore using: base64 -w 0 ~/web2app-release.jks"
+            cat /tmp/base64-error.log
+            exit 1
+          fi
+
           test -s signing/release.keystore || { echo "::error::Decoded keystore is empty"; exit 1; }
 
       - name: Validate release signing secrets
