@@ -391,36 +391,140 @@
     };
   }
 
-  async function downloadLatestGitHubReleaseApk() {
-    try {
-      var response=await fetch('https://api.github.com/repos/gpldroid/todroid/releases/latest',{headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},cache:'no-store'});
-      if(!response.ok) throw new Error('GitHub Release lookup failed ('+response.status+').');
-      var release=await response.json();
-      var apk=(release.assets||[]).find(function(asset){return /\\.apk$/i.test(asset.name);});
-      if(!apk||!apk.browser_download_url) throw new Error('No APK is available in the latest GitHub Release yet.');
-      var link=document.createElement('a');link.href=apk.browser_download_url;link.target='_blank';link.rel='noopener';link.download=apk.name;document.body.appendChild(link);link.click();link.remove();
-      showToast('APK download started: '+apk.name,'success'); return true;
-    } catch(error) { showToast(error&&error.message?error.message:'Unable to download the latest APK.','error'); return false; }
+  function showApkWaitTimer(seconds, statusText) {
+    var existing = document.getElementById('apk-download-countdown');
+    if (existing) existing.remove();
+    var box = document.createElement('section');
+    box.id = 'apk-download-countdown';
+    box.className = 'apk-build-indicator apk-download-countdown';
+    box.setAttribute('role', 'status');
+    box.setAttribute('aria-live', 'polite');
+    box.innerHTML =
+      '<div class="apk-build-indicator__header">' +
+        '<div class="apk-build-indicator__icon" aria-hidden="true"><i class="fa-solid fa-hourglass-half"></i></div>' +
+        '<div class="apk-build-indicator__copy">' +
+          '<strong id="apk-countdown-title">Preparing direct APK download</strong>' +
+          '<span id="apk-countdown-step">' + (statusText || 'Waiting for the GitHub Release...') + '</span>' +
+        '</div>' +
+        '<div class="apk-build-indicator__timer">' +
+          '<strong id="apk-countdown-seconds">' + seconds + 's</strong><span>remaining</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="apk-build-indicator__meta"><span id="apk-countdown-stage">Waiting for build</span><strong id="apk-countdown-percent">0%</strong></div>' +
+      '<div class="apk-build-indicator__track"><span id="apk-countdown-bar"></span></div>' +
+      '<p id="apk-countdown-hint" class="apk-build-indicator__hint">This page stays here. GitHub Actions builds the APK; the browser waits and then opens the direct Release download.</p>';
+    document.body.appendChild(box);
+    return box;
   }
 
-  function setApkBuildButtonsBusy(busy){document.querySelectorAll('[onclick*="triggerDirectApkDownload"], [onclick*="triggerGitHubBuild"]').forEach(function(button){button.disabled=busy;button.setAttribute('aria-busy',busy?'true':'false');button.style.opacity=busy?'.65':'';button.style.pointerEvents=busy?'none':'';});}
+  async function getLatestReleaseApk() {
+    var response = await fetch('https://api.github.com/repos/gpldroid/todroid/releases?per_page=10', {
+      headers: {'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},
+      cache: 'no-store'
+    });
+    if (!response.ok) throw new Error('GitHub Release lookup failed (' + response.status + ').');
+    var releases = await response.json();
+    var c = config();
+    var prefix = 'v' + c.version + '-build-';
+    for (var i = 0; i < releases.length; i++) {
+      var release = releases[i];
+      if (release && release.draft) continue;
+      if (release && release.tag_name && release.tag_name.indexOf(prefix) === 0) {
+        var apk = (release.assets || []).find(function(asset) {
+          return /\\.apk$/i.test(asset.name) && asset.browser_download_url;
+        });
+        if (apk) return {release: release, apk: apk};
+      }
+    }
+    return null;
+  }
 
-  function triggerGitHubBuildInternal(){
-    if(window.__web2appApkBuildRunning)return false;
-    var c=config(); if(!/^https:\/\//i.test(c.url)){showToast('Use an HTTPS target URL before starting the GitHub build.','error');return false;}
-    var indicator=createApkBuildIndicator(); window.__web2appApkBuildRunning=true; setApkBuildButtonsBusy(true);
-    indicator.set('GitHub Actions is ready','Opening the repository workflow. Your APK will be built on GitHub.',15,'Stage 1 / 3');
-    var workflowUrl='https://github.com/gpldroid/todroid/actions/workflows/android-build.yml';
-    var opened=window.open(workflowUrl,'_blank','noopener');
-    if(!opened){window.location.href=workflowUrl;return true;}
-    indicator.set('Workflow opened','Enter the app values in GitHub and click Run workflow.',55,'Stage 2 / 3');
-    showToast('GitHub Actions opened. Start the Android Build workflow there.','info');
-    window.setTimeout(function(){indicator.finish(true,'GitHub Actions now handles the complete Android build, signing, Release and APK/AAB artifacts.');window.__web2appApkBuildRunning=false;setApkBuildButtonsBusy(false);},1200);
-    return true;
+  async function downloadLatestGitHubReleaseApk() {
+    if (window.__web2appApkDownloadRunning) return false;
+    var c = config();
+    if (!/^https:\\/\\//i.test(c.url)) {
+      showToast('Use an HTTPS target URL before downloading the APK.', 'error');
+      return false;
+    }
+    window.__web2appApkDownloadRunning = true;
+    setApkBuildButtonsBusy(true);
+    var seconds = 30;
+    var box = showApkWaitTimer(seconds, 'Checking whether the APK Release is ready...');
+    var timerEl = document.getElementById('apk-countdown-seconds');
+    var bar = document.getElementById('apk-countdown-bar');
+    var step = document.getElementById('apk-countdown-step');
+    var title = document.getElementById('apk-countdown-title');
+    var stage = document.getElementById('apk-countdown-stage');
+    var pct = document.getElementById('apk-countdown-percent');
+    var started = Date.now();
+    var found = null;
+
+    try {
+      for (var elapsed = 0; elapsed <= seconds; elapsed++) {
+        try {
+          found = await getLatestReleaseApk();
+          if (found) break;
+        } catch (error) {
+          if (step) step.textContent = 'Waiting for GitHub Release...';
+        }
+
+        var remaining = Math.max(0, seconds - elapsed);
+        if (timerEl) timerEl.textContent = remaining + 's';
+        var progress = Math.min(96, Math.round((elapsed / seconds) * 100));
+        if (bar) bar.style.width = Math.max(3, progress) + '%';
+        if (pct) pct.textContent = progress + '%';
+        if (stage) stage.textContent = 'Checking Release';
+        if (step) step.textContent = elapsed < 10
+          ? 'GitHub Actions is preparing the APK...'
+          : 'Still waiting for the signed APK Release...';
+        if (elapsed < seconds) await new Promise(function(resolve){ window.setTimeout(resolve, 1000); });
+      }
+
+      if (!found) {
+        if (title) title.textContent = 'APK is not ready yet';
+        if (step) step.textContent = 'The 30-second wait ended, but no matching Release was found.';
+        if (stage) stage.textContent = 'Waiting';
+        if (pct) pct.textContent = '—';
+        if (bar) bar.style.width = '100%';
+        showToast('The APK is still being built. Please try Download APK again in a few seconds.', 'info');
+        window.setTimeout(function(){ if(box) box.remove(); }, 4500);
+        return false;
+      }
+
+      if (timerEl) timerEl.textContent = 'Ready';
+      if (bar) bar.style.width = '100%';
+      if (pct) pct.textContent = '100%';
+      if (stage) stage.textContent = 'Completed';
+      if (title) title.textContent = 'APK Ready';
+      if (step) step.textContent = found.apk.name;
+      var link = document.createElement('a');
+      link.href = found.apk.browser_download_url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.download = found.apk.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Direct APK download started: ' + found.apk.name, 'success');
+      window.setTimeout(function(){ if(box) box.remove(); }, 2500);
+      return true;
+    } finally {
+      window.__web2appApkDownloadRunning = false;
+      setApkBuildButtonsBusy(false);
+    }
+  }
+
+  function setApkBuildButtonsBusy(busy){
+    document.querySelectorAll('[onclick*="triggerDirectApkDownload"], [onclick*="triggerGitHubBuild"]').forEach(function(button){
+      button.disabled=busy;
+      button.setAttribute('aria-busy',busy?'true':'false');
+      button.style.opacity=busy?'.65':'';
+      button.style.pointerEvents=busy?'none':'';
+    });
   }
 
   window.triggerGitHubBuild=triggerGitHubBuildInternal;
   window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;
 
-  window.triggerDirectApkDownload = function(){ return triggerGitHubBuildInternal(); };
+
 })();
