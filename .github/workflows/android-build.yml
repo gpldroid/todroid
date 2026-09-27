@@ -275,14 +275,14 @@ jobs:
           PY
 
       - name: Verify debug APK
-        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose web2app-debug.apk"
+        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose ../web2app-debug.apk"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
         with:
           name: web2app-${{ inputs.app_name || 'My Test App' }}-debug-apk
           path: |
-            android-project/web2app-debug.apk
+            web2app-debug.apk
             android-project/app/build/release-info/build-info.json
             android-project/app/build/release-info/SHA256SUMS.txt
           if-no-files-found: error
