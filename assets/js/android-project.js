@@ -624,8 +624,154 @@
     });
   }
 
+  function copyGitHubBuildInputs() {
+    var c = config();
+    var text = [
+      'GitHub Actions → Android Build',
+      '',
+      'app_name: ' + c.name,
+      'app_url: ' + c.url,
+      'package_name: ' + c.pkg,
+      'version_name: ' + c.version,
+      'primary_color: ' + c.color,
+      'camera: ' + String(c.camera),
+      'location: ' + String(c.location),
+      'publish_release: true'
+    ].join('\\n');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        showToast('GitHub Build settings copied.', 'success');
+      }).catch(function(){
+        window.prompt('Copy GitHub Build settings:', text);
+      });
+    } else {
+      window.prompt('Copy GitHub Build settings:', text);
+    }
+    return true;
+  }
+
+  async function downloadLatestGitHubReleaseAsset(assetType) {
+    if (window.__web2appApkDownloadRunning) return false;
+    var c = config();
+    if (!/^https:\/\//i.test(c.url)) {
+      showToast('Use an HTTPS target URL before downloading.', 'error');
+      return false;
+    }
+
+    window.__web2appApkDownloadRunning = true;
+    setApkBuildButtonsBusy(true);
+
+    var discoveryStartedAt = Number(window.__web2appBuildStartedAt || Date.now());
+    var buildStartMs = null;
+    var maxWaitSeconds = 15 * 60;
+    var box = showApkWaitTimer(30, 'Waiting for the matching GitHub Release...');
+    var timerEl = document.getElementById('apk-countdown-seconds');
+    var bar = document.getElementById('apk-countdown-bar');
+    var step = document.getElementById('apk-countdown-step');
+    var title = document.getElementById('apk-countdown-title');
+    var stage = document.getElementById('apk-countdown-stage');
+    var pct = document.getElementById('apk-countdown-percent');
+    var found = null;
+    var activeRun = null;
+
+    function duration(total) {
+      var s = Math.max(0, Math.floor(total));
+      var m = Math.floor(s / 60), sec = s % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+    function setStart(run) {
+      if (buildStartMs || !run) return;
+      var created = Date.parse(run.created_at || '');
+      if (created) {
+        buildStartMs = created;
+        window.__web2appBuildStartedAt = created;
+      }
+    }
+
+    try {
+      for (var elapsed = 0; elapsed <= maxWaitSeconds; elapsed++) {
+        try {
+          var result = await getLatestReleaseApk(discoveryStartedAt);
+          if (result) {
+            activeRun = result.run || activeRun;
+            setStart(activeRun);
+            if (result.state === 'ready') {
+              var assetName = assetType === 'aab' ? /\\.aab$/i : /\\.apk$/i;
+              var asset = (result.release.assets || []).find(function(a){ return assetName.test(a.name) && a.browser_download_url; });
+              if (asset) found = { result: result, asset: asset };
+            }
+            if (result.state === 'failed') {
+              if (title) title.textContent = 'Build failed';
+              if (step) step.textContent = 'GitHub Actions finished without creating a valid Release artifact.';
+              if (stage) stage.textContent = 'Build failed';
+              if (pct) pct.textContent = '—';
+              if (bar) bar.style.width = '100%';
+              showToast('The GitHub Android build did not complete successfully.', 'error');
+              return false;
+            }
+          }
+        } catch (error) {
+          if (step) step.textContent = 'Waiting for GitHub Actions status...';
+        }
+
+        if (found) break;
+
+        var realElapsed = buildStartMs ? Math.max(0, Math.floor((Date.now() - buildStartMs) / 1000)) : 0;
+        if (timerEl) timerEl.textContent = duration(realElapsed);
+        if (stage) stage.textContent = activeRun ? 'GitHub build in progress' : 'Waiting for build to start';
+        if (step) step.textContent = activeRun
+          ? 'Build #' + activeRun.run_number + ' is still running. Timer follows GitHub created_at.'
+          : 'Waiting for GitHub to register the new build...';
+        var progress = buildStartMs ? Math.min(96, Math.max(4, Math.round((realElapsed / 30) * 70))) : 4;
+        if (buildStartMs && realElapsed > 30) progress = Math.min(96, 70 + Math.round(Math.min(26, (realElapsed - 30) / 10)));
+        if (bar) bar.style.width = progress + '%';
+        if (pct) pct.textContent = buildStartMs ? (realElapsed < 30 ? Math.round(realElapsed / 30 * 100) + '%' : 'In progress') : 'Waiting';
+
+        if (elapsed < maxWaitSeconds) await new Promise(function(resolve){ window.setTimeout(resolve, 2000); });
+      }
+
+      if (!found) {
+        if (title) title.textContent = 'Build is taking longer than expected';
+        if (step) step.textContent = 'No matching Release artifact was found yet. Nothing was downloaded.';
+        if (stage) stage.textContent = activeRun ? 'Still building' : 'Waiting for build';
+        if (pct) pct.textContent = '—';
+        if (bar) bar.style.width = '100%';
+        showToast('The build is not ready yet. No old artifact was downloaded.', 'info');
+        return false;
+      }
+
+      var total = buildStartMs ? Math.floor((Date.now() - buildStartMs) / 1000) : 0;
+      if (timerEl) timerEl.textContent = duration(total);
+      if (bar) bar.style.width = '100%';
+      if (pct) pct.textContent = '100%';
+      if (stage) stage.textContent = 'Completed in ' + duration(total);
+      if (title) title.textContent = assetType === 'aab' ? 'AAB Ready' : 'APK Ready';
+      if (step) step.textContent = found.asset.name;
+
+      var link = document.createElement('a');
+      link.href = found.asset.browser_download_url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.download = found.asset.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast((assetType === 'aab' ? 'AAB' : 'APK') + ' download started: ' + found.asset.name, 'success');
+      window.setTimeout(function(){ if(box) box.remove(); }, 3000);
+      return true;
+    } finally {
+      window.__web2appApkDownloadRunning = false;
+      setApkBuildButtonsBusy(false);
+    }
+  }
+
+  function downloadLatestGitHubReleaseAab() {
+    return downloadLatestGitHubReleaseAsset('aab');
+  }
+
   window.triggerGitHubBuild=triggerGitHubBuildInternal;
-  window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;
+  window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;\n  window.triggerAabDownload=downloadLatestGitHubReleaseAab;\n  window.copyGitHubBuildInputs=copyGitHubBuildInputs;
 
 
 })();
