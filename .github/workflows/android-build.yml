@@ -213,7 +213,7 @@ jobs:
           build-type: assemble
           gradle-task: assembleDebug
           project-path: android-project
-          output-path: build-artifacts/web2app-debug.apk
+          output-path: web2app-debug.apk
 
       - name: Build signed release APK
         env:
@@ -267,7 +267,7 @@ jobs:
           PY
 
       - name: Verify debug APK
-        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose build-artifacts/web2app-debug.apk"
+        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose web2app-debug.apk"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
