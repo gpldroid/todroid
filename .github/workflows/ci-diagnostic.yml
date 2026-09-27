@@ -1,0 +1,16 @@
+name: CI Diagnostic
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnostic
+        run: |
+          echo "GitHub Actions runner is operational"
+          echo "SHA: $GITHUB_SHA"
