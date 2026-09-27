@@ -390,6 +390,31 @@
     };
   }
 
+  function triggerGitHubBuildInternal(){
+    if(window.__web2appApkBuildRunning)return false;
+    var c=config();
+    if(!/^https:\\/\\//i.test(c.url)){
+      showToast('Use an HTTPS target URL before starting the GitHub build.','error');
+      return false;
+    }
+    var indicator=createApkBuildIndicator();
+    window.__web2appBuildStartedAt=Date.now();
+    window.__web2appApkBuildRunning=true;
+    setApkBuildButtonsBusy(true);
+    indicator.set('GitHub Actions is ready','Opening the repository workflow. Your APK will be built on GitHub.',15,'Stage 1 / 3');
+    var workflowUrl='https://github.com/gpldroid/todroid/actions/workflows/android-build.yml';
+    var opened=window.open(workflowUrl,'_blank','noopener');
+    if(!opened){window.location.href=workflowUrl;return true;}
+    indicator.set('Workflow opened','Enter the app values in GitHub and click Run workflow.',55,'Stage 2 / 3');
+    showToast('GitHub Actions opened. Start the Android Build workflow there.','info');
+    window.setTimeout(function(){
+      indicator.finish(true,'GitHub Actions now handles the complete Android build, signing, Release and APK/AAB artifacts.');
+      window.__web2appApkBuildRunning=false;
+      setApkBuildButtonsBusy(false);
+    },1200);
+    return true;
+  }
+
   function showApkWaitTimer(seconds, statusText) {
     var existing = document.getElementById('apk-download-countdown');
     if (existing) existing.remove();
@@ -456,7 +481,7 @@
     window.__web2appApkDownloadRunning = true;
     setApkBuildButtonsBusy(true);
     var seconds = 30;
-    var sinceMs = Date.now() - 600000;
+    var sinceMs = Number(window.__web2appBuildStartedAt || (Date.now() - 15000));
     var box = showApkWaitTimer(seconds, 'Checking whether the APK Release is ready...');
     var timerEl = document.getElementById('apk-countdown-seconds');
     var bar = document.getElementById('apk-countdown-bar');
