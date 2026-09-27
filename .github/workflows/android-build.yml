@@ -352,7 +352,7 @@ import json
 from pathlib import Path
 p=Path("release/final/build-info.json")
 info=json.loads(p.read_text())
-info["releaseTag"]="v" + "${VERSION_NAME}"
+info["releaseTag"]="v" + "${VERSION_NAME}-build-" + "${GITHUB_RUN_NUMBER}"
 info["githubRepository"]="${GITHUB_REPOSITORY}"
 p.write_text(json.dumps(info, indent=2) + "\\n")
 PY
