@@ -455,7 +455,13 @@
       var run = runs[i];
       var created = Date.parse(run.created_at || '');
       if (!created || created + 15000 < sinceMs) continue;
-      if (run.status !== 'completed' || run.conclusion !== 'success') continue;
+      if (run.status === 'in_progress' || run.status === 'queued' || run.status === 'requested' || run.status === 'waiting') {
+        return {run: run, state: 'building'};
+      }
+      if (run.status !== 'completed' || run.conclusion !== 'success') {
+        if (run.status === 'completed') return {run: run, state: 'failed'};
+        continue;
+      }
       var tag = prefix + run.run_number;
       var releaseResponse = await fetch('https://api.github.com/repos/gpldroid/todroid/releases/tags/' + encodeURIComponent(tag), {
         headers: {'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},
@@ -466,7 +472,7 @@
       var apk = (release.assets || []).find(function(asset) {
         return /\.apk$/i.test(asset.name) && asset.browser_download_url;
       });
-      if (apk) return {release: release, apk: apk, run: run};
+      if (apk) return {release: release, apk: apk, run: run, state: 'ready'};
     }
     return null;
   }
@@ -478,11 +484,14 @@
       showToast('Use an HTTPS target URL before downloading the APK.', 'error');
       return false;
     }
+
     window.__web2appApkDownloadRunning = true;
     setApkBuildButtonsBusy(true);
-    var seconds = 30;
+
     var sinceMs = Number(window.__web2appBuildStartedAt || (Date.now() - 15000));
-    var box = showApkWaitTimer(seconds, 'Checking whether the APK Release is ready...');
+    var defaultSeconds = 30;
+    var maxWaitSeconds = 15 * 60;
+    var box = showApkWaitTimer(defaultSeconds, 'Waiting for the real GitHub build duration...');
     var timerEl = document.getElementById('apk-countdown-seconds');
     var bar = document.getElementById('apk-countdown-bar');
     var step = document.getElementById('apk-countdown-step');
@@ -490,45 +499,76 @@
     var stage = document.getElementById('apk-countdown-stage');
     var pct = document.getElementById('apk-countdown-percent');
     var found = null;
+    var activeRun = null;
+
+    function formatDuration(totalSeconds) {
+      var s = Math.max(0, Math.floor(totalSeconds));
+      var m = Math.floor(s / 60);
+      var sec = s % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
 
     try {
-      for (var elapsed = 0; elapsed <= seconds; elapsed++) {
+      for (var elapsed = 0; elapsed <= maxWaitSeconds; elapsed++) {
         try {
-          found = await getLatestReleaseApk(sinceMs);
-          if (found) break;
+          var result = await getLatestReleaseApk(sinceMs);
+          if (result) {
+            activeRun = result.run || activeRun;
+            if (result.state === 'ready') {
+              found = result;
+              break;
+            }
+            if (result.state === 'failed') {
+              if (title) title.textContent = 'Build failed';
+              if (step) step.textContent = 'GitHub Actions finished without creating a valid APK Release.';
+              if (stage) stage.textContent = 'Build failed';
+              if (pct) pct.textContent = '—';
+              if (bar) bar.style.width = '100%';
+              showToast('The GitHub Android build did not complete successfully.', 'error');
+              return false;
+            }
+            if (result.state === 'building') {
+              activeRun = result.run;
+            }
+          }
         } catch (error) {
-          if (step) step.textContent = 'Waiting for GitHub Release...';
+          if (step) step.textContent = 'Waiting for GitHub Actions status...';
         }
 
-        var remaining = Math.max(0, seconds - elapsed);
-        if (timerEl) timerEl.textContent = remaining + 's';
-        var progress = Math.min(96, Math.round((elapsed / seconds) * 100));
-        if (bar) bar.style.width = Math.max(3, progress) + '%';
-        if (pct) pct.textContent = progress + '%';
-        if (stage) stage.textContent = 'Checking Release';
-        if (step) step.textContent = elapsed < 10
-          ? 'GitHub Actions is preparing the APK...'
-          : 'Still waiting for the signed APK Release...';
-        if (elapsed < seconds) await new Promise(function(resolve){ window.setTimeout(resolve, 1000); });
+        var realElapsed = Math.max(0, Math.floor((Date.now() - sinceMs) / 1000));
+        if (timerEl) timerEl.textContent = formatDuration(realElapsed);
+        if (stage) stage.textContent = activeRun ? 'GitHub build in progress' : 'Waiting for build to start';
+        if (step) step.textContent = activeRun
+          ? 'Build #' + activeRun.run_number + ' is still running. The timer follows the real duration.'
+          : 'Waiting for GitHub to register the new build...';
+
+        // 30 seconds is only the default visual milestone, never a hard timeout.
+        var progress = Math.min(96, Math.max(4, Math.round((realElapsed / defaultSeconds) * 70)));
+        if (realElapsed > defaultSeconds) progress = Math.min(96, 70 + Math.round(Math.min(26, (realElapsed - defaultSeconds) / 10)));
+        if (bar) bar.style.width = progress + '%';
+        if (pct) pct.textContent = realElapsed < defaultSeconds ? Math.round(realElapsed / defaultSeconds * 100) + '%' : 'In progress';
+
+        if (elapsed < maxWaitSeconds) await new Promise(function(resolve){ window.setTimeout(resolve, 2000); });
       }
 
       if (!found) {
-        if (title) title.textContent = 'APK is not ready yet';
-        if (step) step.textContent = 'The 30-second wait ended, but no matching Release was found.';
-        if (stage) stage.textContent = 'Waiting';
+        if (title) title.textContent = 'Build is taking longer than expected';
+        if (step) step.textContent = 'The safety limit was reached. The build was not treated as successful until GitHub produced the matching Release.';
+        if (stage) stage.textContent = 'Still building';
         if (pct) pct.textContent = '—';
         if (bar) bar.style.width = '100%';
-        showToast('The APK is still being built. Please try Download APK again in a few seconds.', 'info');
-        window.setTimeout(function(){ if(box) box.remove(); }, 4500);
+        showToast('The build is taking longer than expected. Please check again later.', 'info');
         return false;
       }
 
-      if (timerEl) timerEl.textContent = 'Ready';
+      var realTotal = Math.floor((Date.now() - sinceMs) / 1000);
+      if (timerEl) timerEl.textContent = formatDuration(realTotal);
       if (bar) bar.style.width = '100%';
       if (pct) pct.textContent = '100%';
-      if (stage) stage.textContent = 'Completed';
+      if (stage) stage.textContent = 'Completed in ' + formatDuration(realTotal);
       if (title) title.textContent = 'APK Ready';
       if (step) step.textContent = found.apk.name;
+
       var link = document.createElement('a');
       link.href = found.apk.browser_download_url;
       link.target = '_blank';
@@ -537,8 +577,9 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
+
       showToast('Direct APK download started: ' + found.apk.name, 'success');
-      window.setTimeout(function(){ if(box) box.remove(); }, 2500);
+      window.setTimeout(function(){ if(box) box.remove(); }, 3000);
       return true;
     } finally {
       window.__web2appApkDownloadRunning = false;
