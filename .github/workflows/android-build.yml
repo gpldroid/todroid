@@ -48,8 +48,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: android-build-${{ github.ref }}
-  cancel-in-progress: true
+  # Each Web2App request is independent; never cancel another user's build.
+  group: android-build-${{ github.run_id }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -206,8 +207,13 @@ jobs:
           test -n "$KEY_ALIAS" || { echo "::error::Missing KEY_ALIAS repository secret"; exit 1; }
           test -n "$KEY_PASSWORD" || { echo "::error::Missing KEY_PASSWORD repository secret"; exit 1; }
 
-      - name: Build debug APK
-        run: gradle --no-daemon :app:assembleDebug
+      - name: Build debug APK with Build Android App Action
+        uses: sparkfabrik/android-build-action@v1.5.0
+        with:
+          build-type: assemble
+          gradle-task: assembleDebug
+          project-path: android-project
+          output-path: web2app-debug.apk
 
       - name: Build signed release APK
         env:
@@ -260,12 +266,15 @@ jobs:
           }, indent=2) + "\n")
           PY
 
+      - name: Verify debug APK
+        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose web2app-debug.apk"
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v6
         with:
           name: web2app-${{ inputs.app_name }}-debug-apk
           path: |
-            android-project/app/build/outputs/apk/debug/*.apk
+            build-artifacts/web2app-debug.apk
             android-project/app/build/release-info/build-info.json
             android-project/app/build/release-info/SHA256SUMS.txt
           if-no-files-found: error
@@ -376,6 +385,6 @@ EOF
           VERSION_NAME: ${{ inputs.version_name }}
         run: |
           set -euo pipefail
-          tag="v${VERSION_NAME}"
+          tag="v${VERSION_NAME}-build-${GITHUB_RUN_NUMBER}"
           gh release create "$tag" release/final/* --target "${GITHUB_SHA}" --title "${APP_NAME} ${VERSION_NAME} (Build #${GITHUB_RUN_NUMBER})" --notes-file release/final/RELEASE-NOTES.md
 
