@@ -480,7 +480,7 @@
   async function downloadLatestGitHubReleaseApk() {
     if (window.__web2appApkDownloadRunning) return false;
     var c = config();
-    if (!/^https:\\/\\/i.test(c.url)) {
+    if (!/^https:\/\//i.test(c.url)) {
       showToast('Use an HTTPS target URL before downloading the APK.', 'error');
       return false;
     }
