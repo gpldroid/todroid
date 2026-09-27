@@ -210,7 +210,6 @@ jobs:
       - name: Build debug APK with Build Android App Action
         uses: sparkfabrik/android-build-action@v1.5.0
         with:
-          build-type: assemble
           gradle-task: assembleDebug
           project-path: android-project
           output-path: web2app-debug.apk
@@ -274,7 +273,7 @@ jobs:
         with:
           name: web2app-${{ inputs.app_name }}-debug-apk
           path: |
-            build-artifacts/web2app-debug.apk
+            android-project/web2app-debug.apk
             android-project/app/build/release-info/build-info.json
             android-project/app/build/release-info/SHA256SUMS.txt
           if-no-files-found: error
