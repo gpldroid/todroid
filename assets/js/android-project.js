@@ -430,7 +430,7 @@
       if (release && release.draft) continue;
       if (release && release.tag_name && release.tag_name.indexOf(prefix) === 0) {
         var apk = (release.assets || []).find(function(asset) {
-          return /\\.apk$/i.test(asset.name) && asset.browser_download_url;
+          return /\.apk$/i.test(asset.name) && asset.browser_download_url;
         });
         if (apk) return {release: release, apk: apk};
       }
