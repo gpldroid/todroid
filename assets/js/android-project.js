@@ -373,79 +373,54 @@
     });
   }
 
-  async function apiJson(url, options) {
-    var response = await fetch(url, Object.assign({
-      headers: {'Accept':'application/json','Content-Type':'application/json'},
-      cache: 'no-store'
-    }, options || {}));
-    var data = {};
-    try { data = await response.json(); } catch (e) {}
-    if (!response.ok) throw new Error(data.error || ('Build API request failed (' + response.status + ').'));
-    return data;
-  }
-
-  async function triggerGitHubBuildInternal() {
-    if (window.__web2appApkBuildRunning) return false;
+  function githubBuildConfig() {
     var c = config();
-    if (!/^https:\/\//i.test(c.url)) {
-      showToast('Use an HTTPS target URL before starting the GitHub build.', 'error');
-      return false;
-    }
-    var indicator = createApkBuildIndicator();
-    window.__web2appApkBuildRunning = true;
-    setApkBuildButtonsBusy(true);
-    indicator.set('Starting APK build', 'Sending the request through the secure build API...', 5, 'Stage 1 / 4');
-    indicator.pulse();
-
-    try {
-      var build = await apiJson('/api/build', {method:'POST', body:JSON.stringify(githubBuildConfig())});
-      if (!build.run_id) throw new Error('The build API did not return a workflow run ID.');
-      indicator.set('Build started', 'GitHub Actions accepted build #' + build.run_number + '.', 12, 'Stage 1 / 4');
-      indicator.pulse();
-      showToast('Build started on GitHub Actions. Waiting for the signed APK...', 'info');
-
-      var status = null;
-      for (var poll = 0; poll < 120; poll++) {
-        await new Promise(function(resolve){ setTimeout(resolve, poll === 0 ? 2500 : 5000); });
-        status = await apiJson('/api/build-status?run_id=' + encodeURIComponent(build.run_id));
-        var progress = status.status === 'queued'
-          ? 15 + Math.min(15, Math.floor((poll + 1) * 15 / 120))
-          : 30 + Math.min(55, Math.floor((poll + 1) * 55 / 120));
-        indicator.set(
-          status.status === 'completed' ? 'Build completed' : 'Building APK',
-          status.status === 'queued' ? 'Waiting for a GitHub runner...' :
-            status.status === 'in_progress' ? 'Gradle is compiling and signing the Android release.' :
-            'Checking the final GitHub Release asset...',
-          progress,
-          status.status === 'completed' ? 'Stage 4 / 4' : 'Stage 2 / 4'
-        );
-        if (poll % 2 === 0) indicator.pulse();
-        if (status.status === 'completed') {
-          if (status.conclusion !== 'success') throw new Error(status.error || ('GitHub build finished with status: ' + status.conclusion + '.'));
-          break;
-        }
-      }
-      if (!status || status.status !== 'completed') throw new Error('Build timed out while waiting for GitHub Actions.');
-      if (!status.download_url) throw new Error('Build succeeded, but the APK Release asset is not ready yet. Please try again in a few seconds.');
-
-      indicator.set('APK signed', 'Build completed successfully. Starting the permanent APK download...', 96, 'Stage 4 / 4');
-      indicator.pulse();
-      var link = document.createElement('a');
-      link.href = status.download_url; link.target = '_blank'; link.rel = 'noopener'; link.download = status.asset_name || 'web2app-release.apk';
-      document.body.appendChild(link); link.click(); link.remove();
-      indicator.finish(true, 'APK download started: ' + (status.asset_name || 'release.apk'));
-      return true;
-    } catch (error) {
-      console.error('Secure GitHub APK build error:', error);
-      if (indicator) indicator.finish(false, error && error.message ? error.message : 'Unable to build/download the APK.');
-      showToast(error && error.message ? error.message : 'Unable to build/download the APK.', 'error');
-      return false;
-    } finally {
-      window.__web2appApkBuildRunning = false;
-      setApkBuildButtonsBusy(false);
-    }
+    return { app_name:c.name, app_url:c.url, package_name:c.pkg, version_name:c.version,
+      primary_color:c.color, camera:String(c.camera), location:String(c.location), publish_release:'true' };
   }
 
-  window.triggerGitHubBuild = triggerGitHubBuildInternal;
+  function createApkBuildIndicator() {
+    var existing=document.getElementById('apk-build-indicator'); if(existing) existing.remove();
+    var box=document.createElement('section'); box.id='apk-build-indicator'; box.className='apk-build-indicator';
+    box.setAttribute('role','status'); box.setAttribute('aria-live','polite');
+    box.innerHTML='<div class="apk-build-indicator__header"><div class="apk-build-indicator__icon" aria-hidden="true"><i class="fa-solid fa-arrow-up-right-from-square"></i></div><div class="apk-build-indicator__copy"><strong id="apk-build-indicator-title">GitHub Actions build</strong><span id="apk-build-indicator-step">Opening the official GitHub workflow...</span></div></div><div class="apk-build-indicator__meta"><span id="apk-build-indicator-stage">Stage 1 / 3</span><strong id="apk-build-indicator-percent">0%</strong></div><div class="apk-build-indicator__track"><span id="apk-build-indicator-bar"></span></div><p id="apk-build-indicator-hint" class="apk-build-indicator__hint">The Android build and conversion remain entirely inside GitHub Actions. No Vercel or external build server is used.</p>';
+    document.body.appendChild(box);
+    return {
+      set:function(t,st,p,stage){var a=document.getElementById('apk-build-indicator-title'),b=document.getElementById('apk-build-indicator-step'),c=document.getElementById('apk-build-indicator-bar'),d=document.getElementById('apk-build-indicator-percent'),e=document.getElementById('apk-build-indicator-stage');if(a)a.textContent=t;if(b)b.textContent=st;if(c)c.style.width=Math.max(3,Math.min(100,p))+'%';if(d)d.textContent=Math.round(Math.max(0,Math.min(100,p)))+'%';if(e)e.textContent=stage;},
+      finish:function(ok,msg){var a=document.getElementById('apk-build-indicator-title'),b=document.getElementById('apk-build-indicator-step'),h=document.getElementById('apk-build-indicator-hint'),i=document.querySelector('#apk-build-indicator .apk-build-indicator__icon');if(a)a.textContent=ok?'GitHub workflow opened':'Build setup stopped';if(b)b.textContent=msg;if(h)h.textContent=ok?'Complete the inputs on GitHub, start the workflow, then use the Download APK button after the Release is created.':'No external build server was contacted.';if(i){i.innerHTML=ok?'<i class="fa-solid fa-check"></i>':'<i class="fa-solid fa-triangle-exclamation"></i>';i.classList.toggle('is-success',ok);i.classList.toggle('is-error',!ok);}var bar=document.getElementById('apk-build-indicator-bar'),pct=document.getElementById('apk-build-indicator-percent'),stage=document.getElementById('apk-build-indicator-stage');if(bar)bar.style.width='100%';if(pct)pct.textContent=ok?'100%':'—';if(stage)stage.textContent=ok?'Stage 2 / 3':'Stopped';window.setTimeout(function(){var el=document.getElementById('apk-build-indicator');if(el)el.remove();},ok?5000:7000);}
+    };
+  }
+
+  async function downloadLatestGitHubReleaseApk() {
+    try {
+      var response=await fetch('https://api.github.com/repos/gpldroid/todroid/releases/latest',{headers:{'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10'},cache:'no-store'});
+      if(!response.ok) throw new Error('GitHub Release lookup failed ('+response.status+').');
+      var release=await response.json();
+      var apk=(release.assets||[]).find(function(asset){return /\\.apk$/i.test(asset.name);});
+      if(!apk||!apk.browser_download_url) throw new Error('No APK is available in the latest GitHub Release yet.');
+      var link=document.createElement('a');link.href=apk.browser_download_url;link.target='_blank';link.rel='noopener';link.download=apk.name;document.body.appendChild(link);link.click();link.remove();
+      showToast('APK download started: '+apk.name,'success'); return true;
+    } catch(error) { showToast(error&&error.message?error.message:'Unable to download the latest APK.','error'); return false; }
+  }
+
+  function setApkBuildButtonsBusy(busy){document.querySelectorAll('[onclick*="triggerDirectApkDownload"], [onclick*="triggerGitHubBuild"]').forEach(function(button){button.disabled=busy;button.setAttribute('aria-busy',busy?'true':'false');button.style.opacity=busy?'.65':'';button.style.pointerEvents=busy?'none':'';});}
+
+  function triggerGitHubBuildInternal(){
+    if(window.__web2appApkBuildRunning)return false;
+    var c=config(); if(!/^https:\/\//i.test(c.url)){showToast('Use an HTTPS target URL before starting the GitHub build.','error');return false;}
+    var indicator=createApkBuildIndicator(); window.__web2appApkBuildRunning=true; setApkBuildButtonsBusy(true);
+    indicator.set('GitHub Actions is ready','Opening the repository workflow. Your APK will be built on GitHub.',15,'Stage 1 / 3');
+    var workflowUrl='https://github.com/gpldroid/todroid/actions/workflows/android-build.yml';
+    var opened=window.open(workflowUrl,'_blank','noopener');
+    if(!opened){window.location.href=workflowUrl;return true;}
+    indicator.set('Workflow opened','Enter the app values in GitHub and click Run workflow.',55,'Stage 2 / 3');
+    showToast('GitHub Actions opened. Start the Android Build workflow there.','info');
+    window.setTimeout(function(){indicator.finish(true,'GitHub Actions now handles the complete Android build, signing, Release and APK/AAB artifacts.');window.__web2appApkBuildRunning=false;setApkBuildButtonsBusy(false);},1200);
+    return true;
+  }
+
+  window.triggerGitHubBuild=triggerGitHubBuildInternal;
+  window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;
+
   window.triggerDirectApkDownload = function(){ return triggerGitHubBuildInternal(); };
 })();
