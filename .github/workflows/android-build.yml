@@ -216,9 +216,9 @@ jobs:
           gradle-task: assembleDebug
           project-path: android-project
           output-path: web2app-debug.apk
-          ruby-version: "3.2"
-          bundler-version: "2.4.22"
-          fastlane-version: "2.213.0"
+          ruby-version: "3.3"
+          bundler-version: "2.7.2"
+          fastlane-version: "2.232.2"
 
       - name: Build signed release APK
         env:
