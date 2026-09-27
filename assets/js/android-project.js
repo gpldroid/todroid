@@ -771,7 +771,8 @@
   }
 
   window.triggerGitHubBuild=triggerGitHubBuildInternal;
-  window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;\n  window.triggerAabDownload=downloadLatestGitHubReleaseAab;\n  window.copyGitHubBuildInputs=copyGitHubBuildInputs;
+  window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;
+  window.triggerAabDownload=downloadLatestGitHubReleaseAab;\n  window.copyGitHubBuildInputs=copyGitHubBuildInputs;
 
 
 })();
