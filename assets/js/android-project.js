@@ -317,7 +317,6 @@
       '<div class="apk-build-indicator__track"><span id="apk-build-indicator-bar"></span></div>' +
       '<p id="apk-build-indicator-hint" class="apk-build-indicator__hint">Your GitHub token stays on the server and is never requested in the browser.</p>';
     document.body.appendChild(box);
-    var started = Date.now();
     var timer = window.setInterval(function () {
       var seconds = Math.floor((Date.now() - started) / 1000);
       var el = document.getElementById('apk-build-indicator-timer');
