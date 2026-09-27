@@ -697,7 +697,7 @@
             activeRun = result.run || activeRun;
             setStart(activeRun);
             if (result.state === 'ready') {
-              var assetName = assetType === 'aab' ? /\\.aab$/i : /\\.apk$/i;
+              var assetName = assetType === 'aab' ? /\.aab$/i : /\.apk$/i;
               var asset = (result.release.assets || []).find(function(a){ return assetName.test(a.name) && a.browser_download_url; });
               if (asset) found = { result: result, asset: asset };
             }
@@ -772,7 +772,8 @@
 
   window.triggerGitHubBuild=triggerGitHubBuildInternal;
   window.triggerDirectApkDownload=downloadLatestGitHubReleaseApk;
-  window.triggerAabDownload=downloadLatestGitHubReleaseAab;\n  window.copyGitHubBuildInputs=copyGitHubBuildInputs;
+  window.triggerAabDownload=downloadLatestGitHubReleaseAab;
+  window.copyGitHubBuildInputs=copyGitHubBuildInputs;
 
 
 })();
