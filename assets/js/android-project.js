@@ -280,15 +280,6 @@
   window.web2AppProjectExport = writeProject;
   window.triggerSourceZipDownload = writeProject;
 
-  function githubApiHeaders(token) {
-    return {
-      'Accept': 'application/vnd.github+json',
-      'Authorization': 'Bearer ' + token.trim(),
-      'X-GitHub-Api-Version': '2026-03-10',
-      'Content-Type': 'application/json'
-    };
-  }
-
   function githubBuildConfig() {
     var c = config();
     return {
@@ -306,7 +297,6 @@
   function createApkBuildIndicator() {
     var existing = document.getElementById('apk-build-indicator');
     if (existing) existing.remove();
-
     var box = document.createElement('section');
     box.id = 'apk-build-indicator';
     box.className = 'apk-build-indicator';
@@ -317,82 +307,65 @@
         '<div class="apk-build-indicator__icon" aria-hidden="true"><i class="fa-solid fa-gear fa-spin"></i></div>' +
         '<div class="apk-build-indicator__copy">' +
           '<strong id="apk-build-indicator-title">Starting APK build</strong>' +
-          '<span id="apk-build-indicator-step">Preparing GitHub Actions...</span>' +
+          '<span id="apk-build-indicator-step">Preparing secure build request...</span>' +
         '</div>' +
         '<div class="apk-build-indicator__timer">' +
-          '<strong id="apk-build-indicator-timer">00:00</strong>' +
-          '<span>Elapsed</span>' +
+          '<strong id="apk-build-indicator-timer">00:00</strong><span>Elapsed</span>' +
         '</div>' +
       '</div>' +
-      '<div class="apk-build-indicator__meta">' +
-        '<span id="apk-build-indicator-stage">Stage 1 / 4</span>' +
-        '<strong id="apk-build-indicator-percent">0%</strong>' +
-      '</div>' +
+      '<div class="apk-build-indicator__meta"><span id="apk-build-indicator-stage">Stage 1 / 4</span><strong id="apk-build-indicator-percent">0%</strong></div>' +
       '<div class="apk-build-indicator__track"><span id="apk-build-indicator-bar"></span></div>' +
-      '<p id="apk-build-indicator-hint" class="apk-build-indicator__hint">The timer shows that the build request is active.</p>';
-
+      '<p id="apk-build-indicator-hint" class="apk-build-indicator__hint">Your GitHub token stays on the server and is never requested in the browser.</p>';
     document.body.appendChild(box);
-
     var started = Date.now();
     var timer = window.setInterval(function () {
       var seconds = Math.floor((Date.now() - started) / 1000);
-      var min = String(Math.floor(seconds / 60)).padStart(2, '0');
-      var sec = String(seconds % 60).padStart(2, '0');
       var el = document.getElementById('apk-build-indicator-timer');
-      if (el) el.textContent = min + ':' + sec;
+      if (el) el.textContent = String(Math.floor(seconds / 60)).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0');
     }, 1000);
-
     return {
       set: function(titleText, stepText, progress, stageText) {
-        var titleEl = document.getElementById('apk-build-indicator-title');
-        var stepEl = document.getElementById('apk-build-indicator-step');
-        var barEl = document.getElementById('apk-build-indicator-bar');
-        var percentEl = document.getElementById('apk-build-indicator-percent');
-        var stageEl = document.getElementById('apk-build-indicator-stage');
-        if (titleEl) titleEl.textContent = titleText;
-        if (stepEl) stepEl.textContent = stepText;
-        if (barEl) barEl.style.width = Math.max(3, Math.min(100, progress)) + '%';
-        if (percentEl) percentEl.textContent = Math.round(Math.max(0, Math.min(100, progress))) + '%';
-        if (stageEl && stageText) stageEl.textContent = stageText;
+        var a = document.getElementById('apk-build-indicator-title');
+        var b = document.getElementById('apk-build-indicator-step');
+        var c = document.getElementById('apk-build-indicator-bar');
+        var d = document.getElementById('apk-build-indicator-percent');
+        var e = document.getElementById('apk-build-indicator-stage');
+        if (a) a.textContent = titleText; if (b) b.textContent = stepText;
+        if (c) c.style.width = Math.max(3, Math.min(100, progress)) + '%';
+        if (d) d.textContent = Math.round(Math.max(0, Math.min(100, progress))) + '%';
+        if (e && stageText) e.textContent = stageText;
       },
       pulse: function() {
         var icon = document.querySelector('#apk-build-indicator .apk-build-indicator__icon');
         if (!icon) return;
-        icon.classList.remove('is-pulsing');
-        void icon.offsetWidth;
-        icon.classList.add('is-pulsing');
+        icon.classList.remove('is-pulsing'); void icon.offsetWidth; icon.classList.add('is-pulsing');
       },
       finish: function(success, message) {
         window.clearInterval(timer);
         var icon = document.querySelector('#apk-build-indicator .apk-build-indicator__icon');
-        var stepEl = document.getElementById('apk-build-indicator-step');
-        var titleEl = document.getElementById('apk-build-indicator-title');
-        var hintEl = document.getElementById('apk-build-indicator-hint');
-        var barEl = document.getElementById('apk-build-indicator-bar');
-        var percentEl = document.getElementById('apk-build-indicator-percent');
-        var stageEl = document.getElementById('apk-build-indicator-stage');
+        var step = document.getElementById('apk-build-indicator-step');
+        var title = document.getElementById('apk-build-indicator-title');
+        var hint = document.getElementById('apk-build-indicator-hint');
+        var bar = document.getElementById('apk-build-indicator-bar');
+        var pct = document.getElementById('apk-build-indicator-percent');
+        var stage = document.getElementById('apk-build-indicator-stage');
         if (icon) {
           icon.classList.remove('is-pulsing');
           icon.innerHTML = success ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>';
-          icon.classList.toggle('is-success', success);
-          icon.classList.toggle('is-error', !success);
+          icon.classList.toggle('is-success', success); icon.classList.toggle('is-error', !success);
         }
-        if (titleEl) titleEl.textContent = success ? 'APK Ready' : 'Build interrupted';
-        if (stepEl) stepEl.textContent = message;
-        if (hintEl) hintEl.textContent = success ? 'Signed APK is ready and stored permanently in the GitHub Release.' : 'Review the build error and GitHub Actions log.';
-        if (barEl) barEl.style.width = success ? '100%' : '100%';
-        if (percentEl) percentEl.textContent = success ? '100%' : '—';
-        if (stageEl) stageEl.textContent = success ? 'Completed' : 'Stopped';
-        window.setTimeout(function () {
-          var el = document.getElementById('apk-build-indicator');
-          if (el) el.remove();
-        }, success ? 2500 : 7000);
+        if (title) title.textContent = success ? 'APK Ready' : 'Build interrupted';
+        if (step) step.textContent = message;
+        if (hint) hint.textContent = success ? 'Signed APK is ready and stored permanently in the GitHub Release.' : 'Review the build error and GitHub Actions log.';
+        if (bar) bar.style.width = '100%'; if (pct) pct.textContent = success ? '100%' : '—';
+        if (stage) stage.textContent = success ? 'Completed' : 'Stopped';
+        window.setTimeout(function(){ var el=document.getElementById('apk-build-indicator'); if(el) el.remove(); }, success ? 2500 : 7000);
       }
     };
   }
 
   function setApkBuildButtonsBusy(busy) {
-    document.querySelectorAll('[onclick*="triggerDirectApkDownload"], [onclick*="triggerGitHubBuild"]').forEach(function (button) {
+    document.querySelectorAll('[onclick*="triggerDirectApkDownload"], [onclick*="triggerGitHubBuild"]').forEach(function(button) {
       button.disabled = busy;
       button.setAttribute('aria-busy', busy ? 'true' : 'false');
       button.style.opacity = busy ? '.65' : '';
@@ -400,137 +373,70 @@
     });
   }
 
+  async function apiJson(url, options) {
+    var response = await fetch(url, Object.assign({
+      headers: {'Accept':'application/json','Content-Type':'application/json'},
+      cache: 'no-store'
+    }, options || {}));
+    var data = {};
+    try { data = await response.json(); } catch (e) {}
+    if (!response.ok) throw new Error(data.error || ('Build API request failed (' + response.status + ').'));
+    return data;
+  }
+
   async function triggerGitHubBuildInternal() {
     if (window.__web2appApkBuildRunning) return false;
-    var token = window.prompt('GitHub Fine-grained PAT (Actions: Read and write). It is used only for this request and is never saved.');
-    if (!token) return false;
-
     var c = config();
     if (!/^https:\/\//i.test(c.url)) {
       showToast('Use an HTTPS target URL before starting the GitHub build.', 'error');
       return false;
     }
-
-    var headers = githubApiHeaders(token);
-    var dispatchUrl = 'https://api.github.com/repos/gpldroid/todroid/actions/workflows/android-build.yml/dispatches';
-    var startedAt = Date.now();
     var indicator = createApkBuildIndicator();
     window.__web2appApkBuildRunning = true;
     setApkBuildButtonsBusy(true);
-
-    indicator.set('Starting APK build', 'Sending a secure request to GitHub Actions...', 4, 'Stage 1 / 4');
+    indicator.set('Starting APK build', 'Sending the request through the secure build API...', 5, 'Stage 1 / 4');
     indicator.pulse();
 
     try {
-      var dispatchResponse = await fetch(dispatchUrl, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ ref: 'main', inputs: githubBuildConfig() })
-      });
-
-      if (!dispatchResponse.ok) {
-        var dispatchText = await dispatchResponse.text();
-        throw new Error('GitHub dispatch failed (' + dispatchResponse.status + '): ' + dispatchText.slice(0, 180));
-      }
-
-      indicator.set('Build started', 'GitHub Actions accepted the build request.', 10, 'Stage 1 / 4');
+      var build = await apiJson('/api/build', {method:'POST', body:JSON.stringify(githubBuildConfig())});
+      if (!build.run_id) throw new Error('The build API did not return a workflow run ID.');
+      indicator.set('Build started', 'GitHub Actions accepted build #' + build.run_number + '.', 12, 'Stage 1 / 4');
       indicator.pulse();
       showToast('Build started on GitHub Actions. Waiting for the signed APK...', 'info');
 
-      var run = null;
-      for (var attempt = 0; attempt < 60; attempt++) {
-        await new Promise(function (resolve) { setTimeout(resolve, attempt === 0 ? 2500 : 5000); });
-
-        var runsResponse = await fetch(
-          'https://api.github.com/repos/gpldroid/todroid/actions/workflows/android-build.yml/runs?branch=main&event=workflow_dispatch&per_page=10',
-          { headers: headers, cache: 'no-store' }
-        );
-        if (!runsResponse.ok) throw new Error('Cannot read GitHub Actions status (' + runsResponse.status + ').');
-
-        var runsData = await runsResponse.json();
-        var candidates = (runsData.workflow_runs || []).filter(function (item) {
-          return new Date(item.created_at).getTime() >= startedAt - 15000;
-        });
-        if (candidates.length) {
-          run = candidates[0];
-          break;
-        }
-
-        var discoveryProgress = 10 + Math.min(10, Math.floor((attempt + 1) * 10 / 60));
-        indicator.set('Starting APK build', 'Waiting for GitHub to create the workflow run...', discoveryProgress, 'Stage 2 / 4');
-      }
-
-      if (!run) throw new Error('GitHub Actions run was not found. Please open Actions and check the workflow manually.');
-
-      indicator.set('Building APK', 'GitHub Actions run #' + run.run_number + ' is compiling the Android project.', 20, 'Stage 2 / 4');
-      indicator.pulse();
-      showToast('GitHub build is running: #' + run.run_number, 'info');
-
+      var status = null;
       for (var poll = 0; poll < 120; poll++) {
-        await new Promise(function (resolve) { setTimeout(resolve, 5000); });
-
-        var statusResponse = await fetch(run.url, { headers: headers, cache: 'no-store' });
-        if (!statusResponse.ok) throw new Error('Cannot read build status (' + statusResponse.status + ').');
-
-        var status = await statusResponse.json();
-        var elapsedProgress = 20 + Math.min(65, Math.floor((Date.now() - startedAt) / 10000));
-        var stageText = status.status === 'queued' ? 'Stage 2 / 4' : 'Stage 3 / 4';
+        await new Promise(function(resolve){ setTimeout(resolve, poll === 0 ? 2500 : 5000); });
+        status = await apiJson('/api/build-status?run_id=' + encodeURIComponent(build.run_id));
+        var progress = status.status === 'queued'
+          ? 15 + Math.min(15, Math.floor((poll + 1) * 15 / 120))
+          : 30 + Math.min(55, Math.floor((poll + 1) * 55 / 120));
         indicator.set(
-          'Building APK',
-          status.status === 'queued' ? 'Waiting for a GitHub runner...' : 'Gradle is compiling and signing the release build.',
-          elapsedProgress,
-          stageText
+          status.status === 'completed' ? 'Build completed' : 'Building APK',
+          status.status === 'queued' ? 'Waiting for a GitHub runner...' :
+            status.status === 'in_progress' ? 'Gradle is compiling and signing the Android release.' :
+            'Checking the final GitHub Release asset...',
+          progress,
+          status.status === 'completed' ? 'Stage 4 / 4' : 'Stage 2 / 4'
         );
         if (poll % 2 === 0) indicator.pulse();
-
         if (status.status === 'completed') {
-          if (status.conclusion !== 'success') {
-            throw new Error('GitHub build finished with status: ' + status.conclusion + '. Open Actions for the detailed log.');
-          }
-          run = status;
+          if (status.conclusion !== 'success') throw new Error(status.error || ('GitHub build finished with status: ' + status.conclusion + '.'));
           break;
         }
       }
+      if (!status || status.status !== 'completed') throw new Error('Build timed out while waiting for GitHub Actions.');
+      if (!status.download_url) throw new Error('Build succeeded, but the APK Release asset is not ready yet. Please try again in a few seconds.');
 
-      if (!run || run.status !== 'completed' || run.conclusion !== 'success') {
-        throw new Error('Build timed out while waiting for GitHub Actions.');
-      }
-
-      indicator.set('APK signed', 'Build completed successfully. Opening the permanent GitHub Release download...', 92, 'Stage 4 / 4');
+      indicator.set('APK signed', 'Build completed successfully. Starting the permanent APK download...', 96, 'Stage 4 / 4');
       indicator.pulse();
-      
-
-      var tag = 'v' + c.version + '-build-' + run.run_number;
-      var releaseResponse = await fetch(
-        'https://api.github.com/repos/gpldroid/todroid/releases/tags/' + encodeURIComponent(tag),
-        { headers: { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2026-03-10' }, cache: 'no-store' }
-      );
-      if (!releaseResponse.ok) {
-        throw new Error('Build succeeded, but GitHub Release ' + tag + ' was not found yet. Wait a few seconds and try again.');
-      }
-
-      var release = await releaseResponse.json();
-      var apk = (release.assets || []).find(function (asset) {
-        return /\.apk$/i.test(asset.name);
-      });
-      if (!apk || !apk.browser_download_url) {
-        throw new Error('The signed APK was built, but no APK release asset was found.');
-      }
-
       var link = document.createElement('a');
-      link.href = apk.browser_download_url;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.download = apk.name;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      indicator.finish(true, 'APK download started: ' + apk.name);
-      
+      link.href = status.download_url; link.target = '_blank'; link.rel = 'noopener'; link.download = status.asset_name || 'web2app-release.apk';
+      document.body.appendChild(link); link.click(); link.remove();
+      indicator.finish(true, 'APK download started: ' + (status.asset_name || 'release.apk'));
       return true;
     } catch (error) {
-      console.error('GitHub APK build error:', error);
+      console.error('Secure GitHub APK build error:', error);
       if (indicator) indicator.finish(false, error && error.message ? error.message : 'Unable to build/download the APK.');
       showToast(error && error.message ? error.message : 'Unable to build/download the APK.', 'error');
       return false;
@@ -541,8 +447,5 @@
   }
 
   window.triggerGitHubBuild = triggerGitHubBuildInternal;
-
-  window.triggerDirectApkDownload = function () {
-    return triggerGitHubBuildInternal();
-  };
+  window.triggerDirectApkDownload = function(){ return triggerGitHubBuildInternal(); };
 })();
