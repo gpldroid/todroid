@@ -379,7 +379,7 @@
         }
         if (titleEl) titleEl.textContent = success ? 'APK Ready' : 'Build interrupted';
         if (stepEl) stepEl.textContent = message;
-        if (hintEl) hintEl.textContent = success ? 'Signed APK is ready.' : 'Review the build error and GitHub Actions log.';
+        if (hintEl) hintEl.textContent = success ? 'Signed APK is ready and stored permanently in the GitHub Release.' : 'Review the build error and GitHub Actions log.';
         if (barEl) barEl.style.width = success ? '100%' : '100%';
         if (percentEl) percentEl.textContent = success ? '100%' : '—';
         if (stageEl) stageEl.textContent = success ? 'Completed' : 'Stopped';
@@ -496,11 +496,11 @@
         throw new Error('Build timed out while waiting for GitHub Actions.');
       }
 
-      indicator.set('APK signed', 'Build completed successfully. Preparing the download...', 92, 'Stage 4 / 4');
+      indicator.set('APK signed', 'Build completed successfully. Opening the permanent GitHub Release download...', 92, 'Stage 4 / 4');
       indicator.pulse();
       
 
-      var tag = 'v' + c.version;
+      var tag = 'v' + c.version + '-build-' + run.run_number;
       var releaseResponse = await fetch(
         'https://api.github.com/repos/gpldroid/todroid/releases/tags/' + encodeURIComponent(tag),
         { headers: { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2026-03-10' }, cache: 'no-store' }
