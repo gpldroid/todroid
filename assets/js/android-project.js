@@ -480,7 +480,7 @@
   async function downloadLatestGitHubReleaseApk() {
     if (window.__web2appApkDownloadRunning) return false;
     var c = config();
-    if (!/^https:\\/\\//i.test(c.url)) {
+    if (!/^https:\\/\\/i.test(c.url)) {
       showToast('Use an HTTPS target URL before downloading the APK.', 'error');
       return false;
     }
@@ -488,10 +488,13 @@
     window.__web2appApkDownloadRunning = true;
     setApkBuildButtonsBusy(true);
 
-    var sinceMs = Number(window.__web2appBuildStartedAt || (Date.now() - 15000));
+    // This is only a discovery window. Once GitHub exposes the new Run,
+    // its own created_at timestamp becomes the authoritative build start.
+    var discoveryStartedAt = Number(window.__web2appBuildStartedAt || Date.now());
+    var buildStartMs = null;
     var defaultSeconds = 30;
     var maxWaitSeconds = 15 * 60;
-    var box = showApkWaitTimer(defaultSeconds, 'Waiting for the real GitHub build duration...');
+    var box = showApkWaitTimer(defaultSeconds, 'Waiting for GitHub to register the new build...');
     var timerEl = document.getElementById('apk-countdown-seconds');
     var bar = document.getElementById('apk-countdown-bar');
     var step = document.getElementById('apk-countdown-step');
@@ -508,16 +511,28 @@
       return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
     }
 
+    function setAuthoritativeBuildStart(run) {
+      if (buildStartMs || !run) return;
+      var created = Date.parse(run.created_at || '');
+      if (created) {
+        buildStartMs = created;
+        window.__web2appBuildStartedAt = created;
+      }
+    }
+
     try {
       for (var elapsed = 0; elapsed <= maxWaitSeconds; elapsed++) {
         try {
-          var result = await getLatestReleaseApk(sinceMs);
+          var result = await getLatestReleaseApk(discoveryStartedAt);
           if (result) {
             activeRun = result.run || activeRun;
+            setAuthoritativeBuildStart(activeRun);
+
             if (result.state === 'ready') {
               found = result;
               break;
             }
+
             if (result.state === 'failed') {
               if (title) title.textContent = 'Build failed';
               if (step) step.textContent = 'GitHub Actions finished without creating a valid APK Release.';
@@ -527,41 +542,54 @@
               showToast('The GitHub Android build did not complete successfully.', 'error');
               return false;
             }
-            if (result.state === 'building') {
-              activeRun = result.run;
-            }
           }
         } catch (error) {
           if (step) step.textContent = 'Waiting for GitHub Actions status...';
         }
 
-        var realElapsed = Math.max(0, Math.floor((Date.now() - sinceMs) / 1000));
+        var now = Date.now();
+        var realElapsed = buildStartMs
+          ? Math.max(0, Math.floor((now - buildStartMs) / 1000))
+          : 0;
+
         if (timerEl) timerEl.textContent = formatDuration(realElapsed);
         if (stage) stage.textContent = activeRun ? 'GitHub build in progress' : 'Waiting for build to start';
         if (step) step.textContent = activeRun
-          ? 'Build #' + activeRun.run_number + ' is still running. The timer follows the real duration.'
+          ? 'Build #' + activeRun.run_number + ' is still running. The timer follows GitHub created_at.'
           : 'Waiting for GitHub to register the new build...';
 
-        // 30 seconds is only the default visual milestone, never a hard timeout.
-        var progress = Math.min(96, Math.max(4, Math.round((realElapsed / defaultSeconds) * 70)));
-        if (realElapsed > defaultSeconds) progress = Math.min(96, 70 + Math.round(Math.min(26, (realElapsed - defaultSeconds) / 10)));
+        // 30 seconds is only a visual milestone, never a build timeout.
+        var progress = buildStartMs
+          ? Math.min(96, Math.max(4, Math.round((realElapsed / defaultSeconds) * 70)))
+          : 4;
+        if (buildStartMs && realElapsed > defaultSeconds) {
+          progress = Math.min(96, 70 + Math.round(Math.min(26, (realElapsed - defaultSeconds) / 10)));
+        }
         if (bar) bar.style.width = progress + '%';
-        if (pct) pct.textContent = realElapsed < defaultSeconds ? Math.round(realElapsed / defaultSeconds * 100) + '%' : 'In progress';
+        if (pct) pct.textContent = buildStartMs
+          ? (realElapsed < defaultSeconds ? Math.round(realElapsed / defaultSeconds * 100) + '%' : 'In progress')
+          : 'Waiting';
 
-        if (elapsed < maxWaitSeconds) await new Promise(function(resolve){ window.setTimeout(resolve, 2000); });
+        if (elapsed < maxWaitSeconds) {
+          await new Promise(function(resolve){ window.setTimeout(resolve, 2000); });
+        }
       }
 
       if (!found) {
         if (title) title.textContent = 'Build is taking longer than expected';
-        if (step) step.textContent = 'The safety limit was reached. The build was not treated as successful until GitHub produced the matching Release.';
-        if (stage) stage.textContent = 'Still building';
+        if (step) step.textContent = 'Polling stopped for safety. The build is not considered successful until GitHub creates the matching Release.';
+        if (stage) stage.textContent = activeRun ? 'Still building' : 'Waiting for build';
         if (pct) pct.textContent = '—';
         if (bar) bar.style.width = '100%';
         showToast('The build is taking longer than expected. Please check again later.', 'info');
         return false;
       }
 
-      var realTotal = Math.floor((Date.now() - sinceMs) / 1000);
+      setAuthoritativeBuildStart(found.run || activeRun);
+      var realTotal = buildStartMs
+        ? Math.floor((Date.now() - buildStartMs) / 1000)
+        : 0;
+
       if (timerEl) timerEl.textContent = formatDuration(realTotal);
       if (bar) bar.style.width = '100%';
       if (pct) pct.textContent = '100%';
