@@ -210,6 +210,9 @@ jobs:
           test -n "$KEY_ALIAS" || { echo "::error::Missing KEY_ALIAS repository secret"; exit 1; }
           test -n "$KEY_PASSWORD" || { echo "::error::Missing KEY_PASSWORD repository secret"; exit 1; }
 
+      - name: Prepare Gradle wrapper shim
+        run: chmod +x gradlew
+
       - name: Build debug APK with Build Android App Action
         uses: sparkfabrik/android-build-action@v1.5.0
         with:
