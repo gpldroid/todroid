@@ -330,13 +330,13 @@ jobs:
           cp "$sums" release/final/SHA256SUMS.txt
           cp "$info" release/final/build-info.json
           cat > release/final/RELEASE-NOTES.md <<EOF
-# My Test App 1.0.1
+          # My Test App 1.0.1
 
-Package: com.web2app.test
-Version: 1.0.1
-Build: #${GITHUB_RUN_NUMBER}
-Target: https://example.com
-EOF
+          Package: com.web2app.test
+          Version: 1.0.1
+          Build: #${GITHUB_RUN_NUMBER}
+          Target: https://example.com
+          EOF
 
       - name: Create Test GitHub Release
         env:
