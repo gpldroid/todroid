@@ -17,51 +17,16 @@
     <link rel="manifest" href="manifest.webmanifest">
     <meta property="og:site_name" content="Web2App Studio Pro">
     <meta property="og:locale" content="en_US">
-    <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-    <meta name="twitter:site" content="@web2appstudio">
-
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://web2appstudio.com/">
     <meta property="og:title" content="Web2App Studio Pro | Website to Android APK Builder">
     <meta property="og:description" content="Convert a website into an Android app project with WebView configuration, branding, permissions, live preview, and source export.">
-    <meta property="og:image" content="https://web2appstudio.com/assets/images/og-image.svg">
-    <meta property="og:image:type" content="image/svg+xml">
-    <meta property="og:image:alt" content="Web2App Studio Pro - Website to Android App Builder">
-
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://web2appstudio.com/">
-    <meta name="twitter:title" content="Web2App Studio Pro | Website to Android APK Builder">
-    <meta name="twitter:description" content="Convert a website into an Android app project with WebView configuration, branding, permissions, live preview, and source export.">
-    <meta name="twitter:image" content="https://web2appstudio.com/assets/images/og-image.svg">
-    <meta name="twitter:image:alt" content="Web2App Studio Pro - Website to Android App Builder">
-
+    <meta name="twitter:site" content="@web2appstudio">
     <title>Web2App Studio Pro | Website to Android APK Builder</title>
-
     <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@graph":[
-        {
-          "@type":"WebApplication",
-          "@id":"https://web2appstudio.com/#webapp",
-          "name":"Web2App Studio Pro",
-          "url":"https://web2appstudio.com/",
-          "applicationCategory":"DeveloperApplication",
-          "operatingSystem":"Web Browser",
-          "description":"Convert websites into Android app projects with WebView configuration, branding, permissions, live preview, and source export.",
-          "image":"https://web2appstudio.com/assets/images/og-image.svg"
-        },
-        {
-          "@type":"WebSite",
-          "@id":"https://web2appstudio.com/#website",
-          "url":"https://web2appstudio.com/",
-          "name":"Web2App Studio Pro",
-          "description":"Website to Android app builder and WebView project generator."
-        }
-      ]
-    }
+    {"@context":"https://schema.org","@graph":[{"@type":"WebApplication","@id":"https://web2appstudio.com/#webapp","name":"Web2App Studio Pro","url":"https://web2appstudio.com/","applicationCategory":"DeveloperApplication","operatingSystem":"Web Browser","description":"Convert websites into Android app projects with WebView configuration, branding, permissions, live preview, and source export."},{"@type":"WebSite","@id":"https://web2appstudio.com/#website","url":"https://web2appstudio.com/","name":"Web2App Studio Pro","description":"Website to Android app builder and WebView project generator."}]}
     </script>
-
     <script src="assets/js/tailwind.config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -78,13 +43,253 @@
 <body class="site-page">
     <div data-shared-header></div>
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        ...
+        <!-- Builder Section -->
+        <section id="section-builder" class="space-y-6">
+            <div class="page-hero">
+                <p class="text-amber-400 text-xs font-bold uppercase tracking-widest">Studio</p>
+                <h1 class="text-4xl sm:text-5xl font-black text-white mt-3">Android App Builder</h1>
+                <p class="text-gray-400 mt-2 max-w-2xl">Configure your website, customize branding, and export a ready-to-build Android Studio project.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Configuration Panel -->
+                <div class="glass-panel rounded-3xl border border-gray-800 p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-white">App Configuration</h2>
+                        <button onclick="quickDemo()" class="px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 text-xs font-bold rounded-lg transition">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Quick Demo
+                        </button>
+                    </div>
+                    <!-- Config Tabs -->
+                    <div class="flex gap-1 border-b border-gray-700">
+                        <button id="tab-btn-basic" class="active px-4 py-2 text-sm font-bold border-b-2 border-brand-500 text-brand-300 bg-gray-900/60" onclick="switchConfigTab('basic')"><i class="fa-solid fa-cog"></i> Basic</button>
+                        <button id="tab-btn-design" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition" onclick="switchConfigTab('design')"><i class="fa-solid fa-palette"></i> Design</button>
+                        <button id="tab-btn-features" class="px-4 py-2 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-white transition" onclick="switchConfigTab('features')"><i class="fa-solid fa-sliders"></i> Features</button>
+                    </div>
+                    <!-- Basic Tab -->
+                    <div id="config-tab-basic" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">App Name</label>
+                            <input type="text" id="app-name" placeholder="My Web App" value="Wiki Pocket" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition" oninput="updateSimulator()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Website URL</label>
+                            <input type="url" id="app-url" placeholder="https://example.com" value="https://wikipedia.org" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition" oninput="updateSimulator()">
+                            <button onclick="testTargetUrl()" class="mt-2 w-full py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 text-xs font-bold rounded-lg transition">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Test URL
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Android Package ID</label>
+                            <input type="text" id="app-package" placeholder="com.company.app" value="com.web2app.wikipocket" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition" oninput="validatePackageId()">
+                            <div id="app-package-status" class="mt-1.5 text-xs font-semibold text-gray-400"></div>
+                            <button onclick="autoGeneratePackageId()" class="mt-2 w-full py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-700 hover:border-gray-600 text-gray-300 text-xs font-bold rounded-lg transition">
+                                <i class="fa-solid fa-magic"></i> Auto-Generate
+                            </button>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Version</label>
+                            <input type="text" id="app-version" placeholder="1.0.0" value="1.0.0" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition" oninput="updateSimulator()">
+                        </div>
+                    </div>
+                    <!-- Design Tab -->
+                    <div id="config-tab-design" class="space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Primary Color</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="primary-color" value="#4f46e5" class="w-12 h-10 bg-gray-900 border border-gray-700 rounded-lg cursor-pointer" oninput="syncColorInput('primary-color', this.value); updateSimulator()">
+                                <input type="text" id="primary-color-text" value="#4f46e5" class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white font-mono text-sm focus:border-brand-500 focus:outline-none transition">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Splash Background</label>
+                            <div class="flex gap-2">
+                                <input type="color" id="splash-bg-color" value="#080a11" class="w-12 h-10 bg-gray-900 border border-gray-700 rounded-lg cursor-pointer" oninput="syncColorInput('splash-bg-color', this.value); updateSimulator()">
+                                <input type="text" id="splash-bg-color-text" value="#080a11" class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white font-mono text-sm focus:border-brand-500 focus:outline-none transition">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">Splash Tagline</label>
+                            <input type="text" id="splash-tagline" placeholder="Your app tagline" value="Powered by Web2App Pro Engine" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition" oninput="updateSimulator()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-white mb-1.5">App Icon</label>
+                            <input type="file" id="app-icon-upload" accept="image/*" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-gray-400 text-xs file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer transition" onchange="handleIconUpload(event)">
+                            <p class="mt-2 text-xs text-gray-500">Recommended: 512x512 PNG or JPG</p>
+                        </div>
+                    </div>
+                    <!-- Features Tab -->
+                    <div id="config-tab-features" class="space-y-3 hidden">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="feat-camera" checked class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-brand-500 focus:ring-brand-500" oninput="updateSimulator()">
+                            <span class="text-sm text-white font-medium">Camera & Microphone Access</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="feat-location" class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-brand-500 focus:ring-brand-500" oninput="updateSimulator()">
+                            <span class="text-sm text-white font-medium">Location Services</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="feat-pull-refresh" checked class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-brand-500 focus:ring-brand-500" oninput="updateSimulator()">
+                            <span class="text-sm text-white font-medium">Pull-to-Refresh</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="feat-bottom-nav" checked class="w-4 h-4 rounded bg-gray-900 border-gray-700 text-brand-500 focus:ring-brand-500" oninput="updateSimulator()">
+                            <span class="text-sm text-white font-medium">Bottom Navigation Bar</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- Phone Simulator -->
+                <div class="flex justify-center">
+                    <div class="relative w-full max-w-sm">
+                        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-3 shadow-2xl border border-gray-700" style="aspect-ratio: 9/20;">
+                            <div id="sim-status-bar" class="bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-2xl flex items-center justify-between">
+                                <span id="sim-clock">12:34</span>
+                                <span>📶 📡 🔋</span>
+                            </div>
+                            <div id="sim-header" class="bg-brand-600 text-white px-4 py-3 flex items-center justify-between">
+                                <i class="fa-solid fa-arrow-left text-lg"></i>
+                                <span id="sim-header-title" class="font-bold text-sm">App</span>
+                                <img id="sim-header-icon" src="https://placehold.co/24x24/6366f1/ffffff?text=A" class="w-6 h-6 rounded" alt="App Icon">
+                            </div>
+                            <div id="sim-splash-screen" class="absolute inset-0 bg-gray-900 rounded-3xl p-3 flex flex-col items-center justify-center gap-4 opacity-0 transition-opacity duration-300 pointer-events-none" style="top: 0; left: 0;">
+                                <img id="sim-splash-icon" src="https://placehold.co/96x96/6366f1/ffffff?text=APP" class="w-24 h-24 rounded-2xl" alt="App Icon">
+                                <div class="text-center">
+                                    <h3 id="sim-splash-title" class="text-white font-bold text-lg">My App</h3>
+                                    <p id="sim-splash-tag" class="text-gray-400 text-xs mt-2">Loading...</p>
+                                </div>
+                            </div>
+                            <iframe id="sim-iframe" src="https://wikipedia.org" class="w-full h-full rounded-lg border-0 bg-white" title="App Preview"></iframe>
+                            <div id="sim-bottom-nav" class="bg-gray-950 border-t border-gray-800 px-4 py-2 flex items-center justify-around text-gray-400 text-xs">
+                                <button class="flex flex-col items-center gap-1" onclick="simNav('home')"><i class="fa-solid fa-home text-lg"></i><span>Home</span></button>
+                                <button class="flex flex-col items-center gap-1" onclick="simNav('explore')"><i class="fa-solid fa-compass text-lg"></i><span>Explore</span></button>
+                                <button class="flex flex-col items-center gap-1" onclick="reloadSimulator()"><i class="fa-solid fa-arrow-rotate-right text-lg"></i><span>Reload</span></button>
+                                <button class="flex flex-col items-center gap-1" onclick="togglePhoneTheme()"><i class="fa-solid fa-moon text-lg"></i><span>Theme</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Build Section -->
+            <div class="space-y-4 mt-8">
+                <h2 class="text-xl font-bold text-white">Export & Download</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="startBuildProcess()" class="py-3 px-4 bg-gradient-to-r from-emerald-600 to-brand-600 hover:from-emerald-500 hover:to-brand-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download Android Studio Project
+                    </button>
+                    <button onclick="openCodeViewerModal()" class="py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-code"></i> View Source Code
+                    </button>
+                </div>
+                <!-- Login Section -->
+                <div class="glass-panel rounded-xl border border-gray-800 p-4 mt-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Sign In to Download</h3>
+                            <p class="text-xs text-gray-400 mt-1">Create a free account to manage and download your projects</p>
+                        </div>
+                        <button id="auth-trigger-login" onclick="if(window.web2appAuth) window.web2appAuth.openAuthModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm rounded-lg transition flex items-center gap-2">
+                            <i class="fa-solid fa-sign-in-alt"></i> Sign In
+                        </button>
+                        <div id="auth-user-profile" class="hidden flex items-center gap-3">
+                            <div class="text-right">
+                                <p id="auth-user-name" class="text-sm font-bold text-white">User</p>
+                                <p id="auth-user-email" class="text-xs text-gray-400">user@example.com</p>
+                            </div>
+                            <button id="auth-logout-btn" onclick="if(window.web2appAuth) window.web2appAuth.logout()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-300 text-xs font-bold rounded-lg transition">
+                                <i class="fa-solid fa-sign-out-alt"></i> Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <div data-shared-footer></div>
-    <div id="build-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        ...
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-950 border border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white">Sign In</h2>
+                <button id="auth-close-modal" class="text-gray-500 hover:text-gray-300 text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-white mb-2">Email Address</label>
+                    <input type="email" id="auth-email-input" placeholder="you@example.com" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-white mb-2">Password</label>
+                    <input type="password" id="auth-password-input" placeholder="••••••••" class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-brand-500 focus:outline-none transition">
+                </div>
+                <button id="auth-login-btn" class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-sign-in-alt"></i> Sign In
+                </button>
+                <p class="text-xs text-gray-500 text-center">Demo account: Any email works. Password: any password.</p>
+            </div>
+        </div>
     </div>
+    <!-- Build Modal -->
+    <div id="build-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-950 border border-gray-800 rounded-2xl max-w-2xl w-full max-h-96 overflow-hidden shadow-2xl">
+            <div class="bg-gradient-to-r from-brand-600/10 to-indigo-600/10 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div id="build-icon" class="text-4xl text-brand-400"><i class="fa-solid fa-gear fa-spin"></i></div>
+                    <div>
+                        <h3 id="build-title" class="text-lg font-bold text-white">Generating Project...</h3>
+                        <p id="build-step-text" class="text-sm text-gray-400 mt-1">Starting export process</p>
+                    </div>
+                </div>
+                <button id="modal-close-btn" onclick="closeBuildModal()" class="hidden text-gray-500 hover:text-gray-300 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="text-gray-400">Progress</span>
+                        <span id="build-percent" class="text-brand-400">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                        <div id="build-progress-bar" class="bg-gradient-to-r from-brand-500 to-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div id="build-terminal" class="bg-gray-900 border border-gray-800 rounded-lg p-3 max-h-32 overflow-y-auto font-mono text-xs text-gray-400 space-y-1"></div>
+                <div id="build-complete-box" class="hidden bg-emerald-600/10 border border-emerald-600/30 rounded-lg p-4 space-y-3">
+                    <div id="qrcode-canvas" class="flex justify-center"></div>
+                    <button onclick="web2AppProjectExport()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Download Project ZIP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Code Viewer Modal -->
+    <div id="code-viewer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-gray-950 border border-gray-800 rounded-2xl max-w-4xl w-full max-h-96 overflow-hidden shadow-2xl">
+            <div class="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Source Code</h3>
+                <button onclick="closeCodeViewerModal()" class="text-gray-500 hover:text-gray-300 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex gap-2">
+                    <button id="code-tab-btn-manifest" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold" onclick="switchCodeTab('manifest')">Manifest</button>
+                    <button id="code-tab-btn-java" class="px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 hover:text-white" onclick="switchCodeTab('java')">MainActivity.java</button>
+                    <button id="code-tab-btn-gradle" class="px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 hover:text-white" onclick="switchCodeTab('gradle')">Gradle</button>
+                </div>
+                <textarea id="code-display-textarea" readonly class="w-full h-48 bg-gray-900 border border-gray-800 rounded-lg p-3 font-mono text-xs text-gray-300 resize-none"></textarea>
+                <button onclick="copyActiveCodeToClipboard()" class="w-full py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition">
+                    <i class="fa-solid fa-copy"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-40 space-y-2 pointer-events-none"></div>
     <script src="assets/js/layout.js" defer></script>
+    <script src="assets/js/auth.js" defer></script>
     <script src="assets/js/app.js" defer></script>
     <script src="assets/js/android-project.js" defer></script>
 </body>
